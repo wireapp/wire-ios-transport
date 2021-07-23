@@ -72,6 +72,7 @@ import WireUtilities
     case teamConversationCreate = 28
     case teamConversationDelete = 29
     case teamMemberUpdate = 30
+    case featureConfigUpdate = 40
 
     // Current max value: conversationReceiptModeUpdate = 39
 }
@@ -160,6 +161,8 @@ extension ZMUpdateEventType {
             return "user.properties-set"
         case .userPropertiesDelete:
             return "user.properties-delete"
+        case .featureConfigUpdate:
+            return "feature-config.update"
         }
     }
 
