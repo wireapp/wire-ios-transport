@@ -74,7 +74,7 @@ import WireUtilities
     case teamMemberUpdate = 30
     case featureConfigUpdate = 40
 
-    // Current max value: conversationReceiptModeUpdate = 39
+    // Current max value: featureConfigUpdate = 40
 }
 
 extension ZMUpdateEventType {
