@@ -26,6 +26,7 @@
 #import "ZMPersistentCookieStorage.h"
 #import <CommonCrypto/CommonCrypto.h>
 #import "ZMKeychain.h"
+#import <WireTransport/WireTransport-Swift.h>
 
 static NSString * const CookieName = @"zuid";
 static NSString * const LegacyAccountName = @"User";
@@ -386,11 +387,7 @@ static dispatch_queue_t isolationQueue()
         return;
     }
     
-    NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc] initRequiringSecureCoding:true];
-    [archiver encodeObject:properties forKey:@"properties"];
-    [archiver finishEncoding];
-
-    NSData *data = [archiver encodedData];
+    NSData *data = [NSKeyedArchiver encodeDataWithObject:properties key:@"properties"];
 
     if (TARGET_OS_IPHONE) {
         NSData *secretKey = [NSUserDefaults cookiesKey];
