@@ -24,16 +24,15 @@ extension ZMTaskIdentifier {
             return nil
         }
         
-        //"Use +unarchivedObjectOfClass:fromData:error: instead"
-        guard let object: Self = NSKeyedUnarchiver.unarchiveObject(with: data) as? Self else {
+        guard let object: Self =
+                try? NSKeyedUnarchiver.unarchivedObject(ofClass: ZMTaskIdentifier.self, from: data) as? Self else {
             return nil
         }
-
+        
         return object
     }
-
+    
     public var data: Data? {
-        //    "Use +archivedDataWithRootObject:requiringSecureCoding:error: instead"
-        return NSKeyedArchiver.archivedData(withRootObject: self)
+        return try? NSKeyedArchiver.archivedData(withRootObject: self, requiringSecureCoding: true)
     }
 }
