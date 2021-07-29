@@ -112,6 +112,7 @@
 		8756C44A2178C97A00627F1F /* BackendEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8756C4492178C97A00627F1F /* BackendEnvironment.swift */; };
 		87B2B79B20BC476E00799AB9 /* ZMTransportRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87B2B79A20BC476E00799AB9 /* ZMTransportRequest.swift */; };
 		A91B3D9826B2AECF003CBB76 /* ZMTaskIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = A91B3D9726B2AECF003CBB76 /* ZMTaskIdentifier.swift */; };
+		A91B3D9C26B2B432003CBB76 /* ZMTaskIdentifierTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A91B3D9B26B2B432003CBB76 /* ZMTaskIdentifierTests.swift */; };
 		A93DCD7A23B6654100AD8575 /* AccessToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = A93DCD7923B6654100AD8575 /* AccessToken.swift */; };
 		A93DCD7C23B668A800AD8575 /* AccessTokenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A93DCD7B23B668A800AD8575 /* AccessTokenTests.swift */; };
 		A96E0106265FF7D10034A057 /* WireSystem.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = A96E0104265FF7D10034A057 /* WireSystem.xcframework */; };
@@ -323,6 +324,7 @@
 		8756C4492178C97A00627F1F /* BackendEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendEnvironment.swift; sourceTree = "<group>"; };
 		87B2B79A20BC476E00799AB9 /* ZMTransportRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZMTransportRequest.swift; sourceTree = "<group>"; };
 		A91B3D9726B2AECF003CBB76 /* ZMTaskIdentifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZMTaskIdentifier.swift; sourceTree = "<group>"; };
+		A91B3D9B26B2B432003CBB76 /* ZMTaskIdentifierTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZMTaskIdentifierTests.swift; sourceTree = "<group>"; };
 		A93DCD7923B6654100AD8575 /* AccessToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessToken.swift; sourceTree = "<group>"; };
 		A93DCD7B23B668A800AD8575 /* AccessTokenTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessTokenTests.swift; sourceTree = "<group>"; };
 		A96E0104265FF7D10034A057 /* WireSystem.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = WireSystem.xcframework; path = Carthage/Build/WireSystem.xcframework; sourceTree = "<group>"; };
@@ -589,6 +591,7 @@
 			children = (
 				546E89DC1B33015000DD1042 /* ZMURLSessionTests.m */,
 				BFEC39661CC6423700591F36 /* ZMTaskIdentifierTests.m */,
+				A91B3D9B26B2B432003CBB76 /* ZMTaskIdentifierTests.swift */,
 				F1D1281A21C262120090045E /* ServerCertificateTrustTests.swift */,
 				F1D1282721C2C0670090045E /* BackendEnvironmentTests.swift */,
 				AF9D8F9C1F20D99500ABF225 /* TestTrustVerificator.swift */,
@@ -1118,6 +1121,7 @@
 				5451EFA31B7A1458002F503B /* Collections+ZMTSafeTypesTests.m in Sources */,
 				F1D1282921C2C0690090045E /* BackendEnvironmentTests.swift in Sources */,
 				546E89E71B33015000DD1042 /* ZMDataBufferTests.m in Sources */,
+				A91B3D9C26B2B432003CBB76 /* ZMTaskIdentifierTests.swift in Sources */,
 				546E89DD1B33015000DD1042 /* ZMAccessTokenHandlerTests.m in Sources */,
 				546E89FD1B33015000DD1042 /* NSObject_ZMTransportEncodingTests.m in Sources */,
 				7C5496DE20A0880C001A9D87 /* ZMTransportRequestLoggingTests.swift in Sources */,
