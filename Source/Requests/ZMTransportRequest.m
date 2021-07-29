@@ -460,7 +460,7 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
             NSString *mimeType = [UTIHelper convertToMimeWithUti:uti];
 
             if ((mimeType == nil) || [mimeType hasPrefix:@"image/x-"] ||
-                [UTIHelper conformsToVectorTypeWithMimeType:mimeType] ||
+                [UTIHelper conformsToVectorTypeWithUti:uti] ||
                 [mimeType hasPrefix:@"application/"]) {
                 continue;
             }
