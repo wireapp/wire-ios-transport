@@ -341,7 +341,8 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
             }
         }
         if (mediaType == nil) {
-            mediaType = CFBridgingRelease(UTTypeCopyPreferredTagWithClass((__bridge CFStringRef) self.binaryDataType, kUTTagClassMIMEType));
+            ///TODO: "Use the UTType class instead."
+            mediaType = CFBridgingRelease(UTTypeCopyPreferredTagWithClass((__bridge CFStringRef) self.binaryDataType, kUTTagClassMIMEType));///TODO: nil
         }
         if (mediaType != nil) {
             [URLRequest addValue:mediaType forHTTPHeaderField:ContentTypeHeader];

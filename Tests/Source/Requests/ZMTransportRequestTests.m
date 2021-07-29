@@ -169,6 +169,7 @@
     XCTAssertFalse(request.shouldFailInsteadOfRetry);
     XCTAssertEqualObjects(request.binaryData, [NSData data]);
     XCTAssertEqualObjects([httpRequest valueForHTTPHeaderField:@"Content-Type"], @"application/json");
+    //(([httpRequest valueForHTTPHeaderField:@"Content-Type"]) equal to (@"application/json")) failed: ("public.json") is not equal to ("application/json")
 }
 
 - (void)testThatImagePostRequestSetsProperties;
