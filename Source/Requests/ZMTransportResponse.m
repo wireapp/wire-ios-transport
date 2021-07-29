@@ -235,7 +235,7 @@ static NSString* ZMLogTag ZM_UNUSED = ZMT_LOG_TAG_NETWORK;
             type = [(__bridge id) CGImageSourceGetType(source) copy];
             CFRelease(source);
         }
-        if (UTTypeConformsTo((__bridge CFStringRef) type, kUTTypeImage)) {
+        if ([UTIHelper conformsToImageTypeWithUti:type]) {
             return ZMTransportResponseContentTypeImage;
         }
     }

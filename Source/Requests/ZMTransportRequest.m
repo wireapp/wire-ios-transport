@@ -773,7 +773,8 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
     NSString *type = CFBridgingRelease(CGImageSourceGetType(source));
     NSString *mediaType = CFBridgingRelease(UTTypeCopyPreferredTagWithClass((__bridge CFStringRef) type, kUTTagClassMIMEType));
     CFRelease(source);
-    if (! UTTypeConformsTo((__bridge CFStringRef) type, kUTTypeImage)) {
+
+    if (! [UTIHelper conformsToImageTypeWithUti:type]) {
         return nil;
     }
 
