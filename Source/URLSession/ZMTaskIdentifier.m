@@ -49,25 +49,6 @@ static NSString * const SessionIdentifierKey = @"sessionIdentifier";
     return self;
 }
 
-+ (instancetype)identifierFromData:(NSData *)data
-{
-    if (nil == data) {
-        return nil;
-    }
-    
-    id object = [NSKeyedUnarchiver unarchiveObjectWithData:data];
-    if ([object isKindOfClass:self]) {
-        return object;
-    }
-    
-    return nil;
-}
-
-- (NSData *)data
-{
-    return [NSKeyedArchiver archivedDataWithRootObject:self];
-}
-
 #pragma mark - Equality
 
 - (BOOL)isEqual:(id)other

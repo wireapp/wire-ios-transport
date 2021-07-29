@@ -78,7 +78,7 @@ static SecKeyRef publicKeyAssociatedWithServerTrust(SecTrustRef const serverTrus
 
 __nullable SecKeyRef _SecCertificateCopyPublicKey(__nonnull SecCertificateRef certificate)
 {
-    return SecCertificateCopyPublicKey(certificate);
+    return SecCertificateCopyKey(certificate);
 }
 
 BOOL verifyServerTrustWithPinnedKeys(SecTrustRef const serverTrust, NSArray *pinnedKeys)
