@@ -341,7 +341,7 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
             }
         }
         if (mediaType == nil) {
-            mediaType = [UTIHelper convertToMimeWithUti:self.binaryDataType];            
+            mediaType = [UTIHelper convertToMimeWithUti:self.binaryDataType];
         }
         if (mediaType != nil) {
             [URLRequest addValue:mediaType forHTTPHeaderField:ContentTypeHeader];
@@ -457,13 +457,14 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
     NSMutableArray *types = [NSMutableArray array];
     {
         for (NSString *uti in CFBridgingRelease(CGImageSourceCopyTypeIdentifiers())) {
-            CFStringRef mimeType = UTTypeCopyPreferredTagWithClass((__bridge CFStringRef) uti, kUTTagClassMIMEType);
-            NSString *mime = CFBridgingRelease(mimeType);
-            if ((mime == nil) || [mime hasPrefix:@"image/x-"] ||
-                UTTypeConformsTo(mimeType, kUTTypeScalableVectorGraphics) || [mime hasPrefix:@"application/"]) {
+            NSString *mimeType = [UTIHelper convertToMimeWithUti:uti];
+
+            if ((mimeType == nil) || [mimeType hasPrefix:@"image/x-"] ||
+                [UTIHelper conformsToVectorTypeWithMimeType:mimeType] ||
+                [mimeType hasPrefix:@"application/"]) {
                 continue;
             }
-            [types addObject:mime];
+            [types addObject:mimeType];
         }
     }
     return types;
