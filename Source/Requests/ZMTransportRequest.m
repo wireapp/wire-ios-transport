@@ -757,7 +757,7 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
     VerifyReturnNil(source != NULL);
     NSString *type = CFBridgingRelease(CGImageSourceGetType(source));
     CFRelease(source);
-    if (! UTTypeConformsTo((__bridge CFStringRef) type, kUTTypeImage)) {
+    if (! [UTIHelper conformsToImageTypeWithUti:type]) {
         return nil;
     }
     ZMTransportRequest *result = [[self alloc] initWithPath:path method:ZMMethodPOST binaryData:data type:type contentDisposition:contentDisposition];
