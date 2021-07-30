@@ -216,10 +216,11 @@ static NSString* ZMLogTag ZM_UNUSED = ZMT_LOG_TAG_NETWORK;
     
     NSString *type = [UTIHelper convertToUtiWithMime:contentType];
     if (type != nil) {
-        if (UTTypeConformsTo((__bridge CFStringRef) type, kUTTypeImage)) {
+//        if (UTTypeConformsTo((__bridge CFStringRef) type, kUTTypeImage)) {
+        if ([UTIHelper conformsToImageTypeWithUti:type]) {
             return ZMTransportResponseContentTypeImage;
         }
-        BOOL hasJSONSupport = (&UTTypeIsDynamic != NULL);
+        BOOL hasJSONSupport = (&UTTypeIsDynamic != NULL);//TODO: "Use UTType.dynamic instead."
         if (hasJSONSupport && UTTypeConformsTo((__bridge CFStringRef) type, kUTTypeJSON)) {
             return ZMTransportResponseContentTypeJSON;
         }
