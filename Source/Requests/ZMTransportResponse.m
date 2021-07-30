@@ -211,18 +211,13 @@ static NSString* ZMLogTag ZM_UNUSED = ZMT_LOG_TAG_NETWORK;
     }
     
     NSString *contentType = self.allHeaderFields[@"Content-Type"];
-    ///convert from memi to uti
-//    NSString *type = CFBridgingRelease(UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType, (__bridge CFStringRef) contentType, kUTTypeContent));
     
     NSString *type = [UTIHelper convertToUtiWithMime:contentType];
     if (type != nil) {
-//        if (UTTypeConformsTo((__bridge CFStringRef) type, kUTTypeImage)) {
         if ([UTIHelper conformsToImageTypeWithUti:type]) {
             return ZMTransportResponseContentTypeImage;
-        }
-        BOOL hasJSONSupport = (&UTTypeIsDynamic != NULL);//TODO: "Use UTType.dynamic instead."
-        if (hasJSONSupport && UTTypeConformsTo((__bridge CFStringRef) type, kUTTypeJSON)) {
-            return ZMTransportResponseContentTypeJSON;
+        } else if ([UTIHelper conformsToJsonTypeWithUti:type]) {
+             return ZMTransportResponseContentTypeJSON;
         }
     }
     // UTI / Core Services couldn't help us.

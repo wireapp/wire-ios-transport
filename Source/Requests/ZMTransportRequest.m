@@ -36,13 +36,6 @@
 const NSTimeInterval ZMTransportRequestDefaultExpirationInterval = 60;
 const NSTimeInterval ZMTransportRequestReducedExpirationInterval = 25;
 
-/// OS X 10.9 does not have uniform type identifiers with JSON support
-static BOOL hasUTJSONSupport(void)
-{
-    return (&UTTypeIsDynamic != NULL);
-}
-
-
 typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
     ZMTransportRequestSessionTypeUseDefaultSession,
     ZMTransportRequestSessionTypeUseBackgroundSessionOnly,
@@ -231,7 +224,7 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
 
 + (instancetype)emptyPutRequestWithPath:(NSString *)path;
 {
-    NSString *type = (hasUTJSONSupport() ? ((__bridge NSString *) kUTTypeJSON) : @"public.json");
+    NSString *type = (__bridge NSString *) kUTTypeJSON;
     return [[self alloc] initWithPath:path method:ZMMethodPUT binaryData:[NSData data] type:type contentDisposition:nil];
 }
 
@@ -335,11 +328,6 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
     
     if (hasBinaryData || isFileUploadWithContentType) {
         NSString *mediaType;
-        if (! hasUTJSONSupport()) {
-            if ([self.binaryDataType isEqualToString:@"public.json"]) {
-                mediaType = [ZMTransportCodec encodedContentType];
-            }
-        }
         if (mediaType == nil) {
             mediaType = [UTIHelper convertToMimeWithUti:self.binaryDataType];
         }
