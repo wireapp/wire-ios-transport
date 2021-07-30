@@ -771,7 +771,7 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
     CGImageSourceRef source = CGImageSourceCreateWithData((__bridge CFDataRef) imageData, NULL);
     VerifyReturnNil(source != NULL);
     NSString *type = CFBridgingRelease(CGImageSourceGetType(source));
-    NSString *mediaType = CFBridgingRelease(UTTypeCopyPreferredTagWithClass((__bridge CFStringRef) type, kUTTagClassMIMEType));
+    NSString *mediaType = [UTIHelper convertToMimeWithUti:type];
     CFRelease(source);
 
     if (! [UTIHelper conformsToImageTypeWithUti:type]) {

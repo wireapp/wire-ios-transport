@@ -211,7 +211,10 @@ static NSString* ZMLogTag ZM_UNUSED = ZMT_LOG_TAG_NETWORK;
     }
     
     NSString *contentType = self.allHeaderFields[@"Content-Type"];
-    NSString *type = CFBridgingRelease(UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType, (__bridge CFStringRef) contentType, kUTTypeContent));
+    ///convert from memi to uti
+//    NSString *type = CFBridgingRelease(UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType, (__bridge CFStringRef) contentType, kUTTypeContent));
+    
+    NSString *type = [UTIHelper convertToUtiWithMime:contentType];
     if (type != nil) {
         if (UTTypeConformsTo((__bridge CFStringRef) type, kUTTypeImage)) {
             return ZMTransportResponseContentTypeImage;
