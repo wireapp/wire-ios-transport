@@ -132,6 +132,7 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
 @property (nonatomic) NSMutableArray <ZMCompletionHandler *> *completionHandlers;
 @property (nonatomic) NSMutableArray <ZMTaskProgressHandler *> *progressHandlers;
 @property (nonatomic) BOOL needsAuthentication;
+@property (nonatomic) BOOL needsCookie;
 @property (nonatomic) BOOL responseWillContainAccessToken;
 @property (nonatomic) BOOL responseWillContainCookie;
 @property (nonatomic) ZMTransportAccept acceptedResponseMediaTypes; ///< C.f. RFC 7231 section 5.3.2 <http://tools.ietf.org/html/rfc7231#section-5.3.2>
@@ -170,7 +171,8 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
         self.payload = payload;
         self.path = path;
         self.method = method;
-        self.needsAuthentication = (authentication == ZMTransportRequestAuthNeedsAccess);
+        self.needsAuthentication = (authentication == ZMTransportRequestAuthNeedsAccess || authentication == ZMTransportRequestAuthNeedsCookieAndAccessToken);
+        self.needsCookie = (authentication == ZMTransportRequestAuthNeedsCookieAndAccessToken);
         self.responseWillContainAccessToken = (authentication == ZMTransportRequestAuthCreatesCookieAndAccessToken);
         self.responseWillContainCookie = (authentication == ZMTransportRequestAuthCreatesCookieAndAccessToken);
         self.acceptedResponseMediaTypes = ZMTransportAcceptTransportData;
