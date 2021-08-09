@@ -26,7 +26,6 @@
 #import "ZMPersistentCookieStorage.h"
 #import <CommonCrypto/CommonCrypto.h>
 #import "ZMKeychain.h"
-#import <WireTransport/WireTransport-Swift.h>
 
 static NSString * const CookieName = @"zuid";
 static NSString * const LegacyAccountName = @"User";
@@ -195,21 +194,18 @@ static dispatch_queue_t isolationQueue()
         NSData *secretKey = [NSUserDefaults cookiesKey];
         data = [data zmDecryptPrefixedIVWithKey:secretKey];
     }
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     NSKeyedUnarchiver *unarchiver;
     @try {
-        NSError * error = nil;
-        unarchiver = [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:&error];
-        
-        if (error != nil) {
-            ZMLogError(@"Unable to parse stored cookie data.");
-            self.authenticationCookieData = nil;
-            return nil;
-        }
+        unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
     } @catch (id) {
+
         ZMLogError(@"Unable to parse stored cookie data.");
         self.authenticationCookieData = nil;
         return nil;
     }
+#pragma clang diagnostic pop
     if (unarchiver == nil) {
         ZMLogError(@"Unable to parse stored cookie data.");
         self.authenticationCookieData = nil;
@@ -387,8 +383,15 @@ static dispatch_queue_t isolationQueue()
         return;
     }
     
-    NSData *data = [NSKeyedArchiver encodeDataWithObject:properties key:@"properties"];
-
+    NSMutableData *data = [NSMutableData data];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc] initForWritingWithMutableData:data];
+#pragma clang diagnostic pop
+    archiver.requiresSecureCoding = YES;
+    [archiver encodeObject:properties forKey:@"properties"];
+    [archiver finishEncoding];
+    
     if (TARGET_OS_IPHONE) {
         NSData *secretKey = [NSUserDefaults cookiesKey];
         data = [[data zmEncryptPrefixingIVWithKey:secretKey] mutableCopy];

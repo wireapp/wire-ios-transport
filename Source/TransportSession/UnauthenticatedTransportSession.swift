@@ -269,23 +269,14 @@ extension HTTPCookie {
         guard !cookies.isEmpty else { return nil }
         let properties = cookies.compactMap(\.properties)
         guard let name = properties.first?[.name] as? String, name == CookieKey.zetaId.rawValue else { return nil }
-                
-        let data = NSKeyedArchiver.encodeData(object: properties, key: CookieKey.properties.rawValue)
         
-        guard let key = UserDefaults.cookiesKey() else { return nil }
-        return data.zmEncryptPrefixingIV(key: key).base64EncodedData()
-    }
-
-}
-
-extension NSKeyedArchiver {
-    @objc
-    class func encodeData(object: Any?, key: String) -> Data {
-        let archiver = NSKeyedArchiver(requiringSecureCoding: true)
+        let data = NSMutableData()
+        let archiver = NSKeyedArchiver(forWritingWith: data)
         archiver.requiresSecureCoding = true
-        archiver.encode(object, forKey: key)
+        archiver.encode(properties, forKey: CookieKey.properties.rawValue)
         archiver.finishEncoding()
-        
-        return archiver.encodedData
+        let key = UserDefaults.cookiesKey()
+        return data.zmEncryptPrefixingIV(withKey: key).base64EncodedData()
     }
+
 }
