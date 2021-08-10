@@ -1,4 +1,4 @@
 github "wireapp/ocmock" "v3.4.3_xcframework"
-github "wireapp/wire-ios-system" "fix/SQPIT-514-drop-iOS-10-11-support"
-github "wireapp/wire-ios-testing" "fix/SQPIT-514-drop-iOS-10-11-support"
-github "wireapp/wire-ios-utilities" "fix/SQPIT-514-drop-iOS-10-11-support"
+github "wireapp/wire-ios-system" "35.0.0"
+github "wireapp/wire-ios-testing" "26.0.0"
+github "wireapp/wire-ios-utilities" "43.0.0"
