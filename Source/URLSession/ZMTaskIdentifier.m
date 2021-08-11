@@ -65,14 +65,10 @@ static NSString * const SessionIdentifierKey = @"sessionIdentifier";
     return YES;
 }
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 - (NSData *)data
 {
-    return [NSKeyedArchiver archivedDataWithRootObject:self];
+    return [NSKeyedArchiver archivedDataWithRootObject:self requiringSecureCoding:YES error:nil];
 }
-
-#pragma clang diagnostic pop
 
 #pragma mark - Equality
 
