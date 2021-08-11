@@ -65,6 +65,11 @@ static NSString * const SessionIdentifierKey = @"sessionIdentifier";
     return YES;
 }
 
++ (BOOL)supportsSecureCoding
+{
+    return YES;
+}
+
 - (NSData *)data
 {
     return [NSKeyedArchiver archivedDataWithRootObject:self requiringSecureCoding:YES error:nil];
