@@ -49,20 +49,15 @@ static NSString * const SessionIdentifierKey = @"sessionIdentifier";
     return self;
 }
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 + (instancetype)identifierFromData:(NSData *)data
 {
     if (nil == data) {
         return nil;
     }
     
-    id object = [NSKeyedUnarchiver unarchiveObjectWithData:data];
-    if ([object isKindOfClass:self]) {
-        return object;
-    }
-    
-    return nil;
+    ZMTaskIdentifier *object = [NSKeyedUnarchiver unarchivedObjectOfClass:ZMTaskIdentifier.class fromData:data error:nil];
+        
+    return object;
 }
 
 + (BOOL)supportsSecureCoding
@@ -70,11 +65,15 @@ static NSString * const SessionIdentifierKey = @"sessionIdentifier";
     return YES;
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 - (NSData *)data
 {
     return [NSKeyedArchiver archivedDataWithRootObject:self];
 }
+
 #pragma clang diagnostic pop
+
 #pragma mark - Equality
 
 - (BOOL)isEqual:(id)other
