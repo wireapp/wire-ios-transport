@@ -36,13 +36,6 @@
 const NSTimeInterval ZMTransportRequestDefaultExpirationInterval = 60;
 const NSTimeInterval ZMTransportRequestReducedExpirationInterval = 25;
 
-/// OS X 10.9 does not have uniform type identifiers with JSON support
-static BOOL hasUTJSONSupport(void)
-{
-    return (&UTTypeIsDynamic != NULL);
-}
-
-
 typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
     ZMTransportRequestSessionTypeUseDefaultSession,
     ZMTransportRequestSessionTypeUseBackgroundSessionOnly,
@@ -139,6 +132,7 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
 @property (nonatomic) NSMutableArray <ZMCompletionHandler *> *completionHandlers;
 @property (nonatomic) NSMutableArray <ZMTaskProgressHandler *> *progressHandlers;
 @property (nonatomic) BOOL needsAuthentication;
+@property (nonatomic) BOOL needsCookie;
 @property (nonatomic) BOOL responseWillContainAccessToken;
 @property (nonatomic) BOOL responseWillContainCookie;
 @property (nonatomic) ZMTransportAccept acceptedResponseMediaTypes; ///< C.f. RFC 7231 section 5.3.2 <http://tools.ietf.org/html/rfc7231#section-5.3.2>
@@ -177,7 +171,8 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
         self.payload = payload;
         self.path = path;
         self.method = method;
-        self.needsAuthentication = (authentication == ZMTransportRequestAuthNeedsAccess);
+        self.needsAuthentication = (authentication == ZMTransportRequestAuthNeedsAccess || authentication == ZMTransportRequestAuthNeedsCookieAndAccessToken);
+        self.needsCookie = (authentication == ZMTransportRequestAuthNeedsCookieAndAccessToken);
         self.responseWillContainAccessToken = (authentication == ZMTransportRequestAuthCreatesCookieAndAccessToken);
         self.responseWillContainCookie = (authentication == ZMTransportRequestAuthCreatesCookieAndAccessToken);
         self.acceptedResponseMediaTypes = ZMTransportAcceptTransportData;
@@ -231,7 +226,7 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
 
 + (instancetype)emptyPutRequestWithPath:(NSString *)path;
 {
-    NSString *type = (hasUTJSONSupport() ? ((__bridge NSString *) kUTTypeJSON) : @"public.json");
+    NSString *type = (__bridge NSString *) kUTTypeJSON;
     return [[self alloc] initWithPath:path method:ZMMethodPUT binaryData:[NSData data] type:type contentDisposition:nil];
 }
 
@@ -335,13 +330,8 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
     
     if (hasBinaryData || isFileUploadWithContentType) {
         NSString *mediaType;
-        if (! hasUTJSONSupport()) {
-            if ([self.binaryDataType isEqualToString:@"public.json"]) {
-                mediaType = [ZMTransportCodec encodedContentType];
-            }
-        }
         if (mediaType == nil) {
-            mediaType = CFBridgingRelease(UTTypeCopyPreferredTagWithClass((__bridge CFStringRef) self.binaryDataType, kUTTagClassMIMEType));
+            mediaType = [UTIHelper convertToMimeWithUti:self.binaryDataType];
         }
         if (mediaType != nil) {
             [URLRequest addValue:mediaType forHTTPHeaderField:ContentTypeHeader];
@@ -457,13 +447,14 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
     NSMutableArray *types = [NSMutableArray array];
     {
         for (NSString *uti in CFBridgingRelease(CGImageSourceCopyTypeIdentifiers())) {
-            CFStringRef mimeType = UTTypeCopyPreferredTagWithClass((__bridge CFStringRef) uti, kUTTagClassMIMEType);
-            NSString *mime = CFBridgingRelease(mimeType);
-            if ((mime == nil) || [mime hasPrefix:@"image/x-"] ||
-                UTTypeConformsTo(mimeType, kUTTypeScalableVectorGraphics) || [mime hasPrefix:@"application/"]) {
+            NSString *mimeType = [UTIHelper convertToMimeWithUti:uti];
+
+            if ((mimeType == nil) || [mimeType hasPrefix:@"image/x-"] ||
+                [UTIHelper conformsToVectorTypeWithUti:uti] ||
+                [mimeType hasPrefix:@"application/"]) {
                 continue;
             }
-            [types addObject:mime];
+            [types addObject:mimeType];
         }
     }
     return types;
@@ -756,7 +747,7 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
     VerifyReturnNil(source != NULL);
     NSString *type = CFBridgingRelease(CGImageSourceGetType(source));
     CFRelease(source);
-    if (! UTTypeConformsTo((__bridge CFStringRef) type, kUTTypeImage)) {
+    if (! [UTIHelper conformsToImageTypeWithUti:type]) {
         return nil;
     }
     ZMTransportRequest *result = [[self alloc] initWithPath:path method:ZMMethodPOST binaryData:data type:type contentDisposition:contentDisposition];
@@ -770,9 +761,10 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
     CGImageSourceRef source = CGImageSourceCreateWithData((__bridge CFDataRef) imageData, NULL);
     VerifyReturnNil(source != NULL);
     NSString *type = CFBridgingRelease(CGImageSourceGetType(source));
-    NSString *mediaType = CFBridgingRelease(UTTypeCopyPreferredTagWithClass((__bridge CFStringRef) type, kUTTagClassMIMEType));
+    NSString *mediaType = [UTIHelper convertToMimeWithUti:type];
     CFRelease(source);
-    if (! UTTypeConformsTo((__bridge CFStringRef) type, kUTTypeImage)) {
+
+    if (! [UTIHelper conformsToImageTypeWithUti:type]) {
         return nil;
     }
 

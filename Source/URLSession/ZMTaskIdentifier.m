@@ -55,17 +55,19 @@ static NSString * const SessionIdentifierKey = @"sessionIdentifier";
         return nil;
     }
     
-    id object = [NSKeyedUnarchiver unarchiveObjectWithData:data];
-    if ([object isKindOfClass:self]) {
-        return object;
-    }
-    
-    return nil;
+    ZMTaskIdentifier *object = [NSKeyedUnarchiver unarchivedObjectOfClass:ZMTaskIdentifier.class fromData:data error:nil];
+        
+    return object;
+}
+
++ (BOOL)supportsSecureCoding
+{
+    return YES;
 }
 
 - (NSData *)data
 {
-    return [NSKeyedArchiver archivedDataWithRootObject:self];
+    return [NSKeyedArchiver archivedDataWithRootObject:self requiringSecureCoding:YES error:nil];
 }
 
 #pragma mark - Equality
