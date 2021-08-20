@@ -65,11 +65,11 @@
     XCTAssertNotNil(sut);
     
     // when
-    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:sut];
+    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:sut requiringSecureCoding:NO error:nil];
     XCTAssertNotNil(data);
     
     // then
-    ZMTaskIdentifier *deserializedSut = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+    ZMTaskIdentifier *deserializedSut = [NSKeyedUnarchiver unarchivedObjectOfClass:ZMTaskIdentifier.class fromData:data error:nil];
     XCTAssertNotNil(deserializedSut);
     XCTAssertEqualObjects(deserializedSut, sut);
 }

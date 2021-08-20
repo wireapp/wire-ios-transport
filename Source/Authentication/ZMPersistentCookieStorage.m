@@ -194,16 +194,18 @@ static dispatch_queue_t isolationQueue()
         NSData *secretKey = [NSUserDefaults cookiesKey];
         data = [data zmDecryptPrefixedIVWithKey:secretKey];
     }
+
     NSKeyedUnarchiver *unarchiver;
     @try {
-        unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
+        NSError *error = nil;
+        unarchiver = [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:&error];
+        
+        if (error != nil || unarchiver == nil) {
+            ZMLogError(@"Unable to parse stored cookie data.");
+            self.authenticationCookieData = nil;
+            return nil;
+        }
     } @catch (id) {
-
-        ZMLogError(@"Unable to parse stored cookie data.");
-        self.authenticationCookieData = nil;
-        return nil;
-    }
-    if (unarchiver == nil) {
         ZMLogError(@"Unable to parse stored cookie data.");
         self.authenticationCookieData = nil;
         return nil;
@@ -380,12 +382,12 @@ static dispatch_queue_t isolationQueue()
         return;
     }
     
-    NSMutableData *data = [NSMutableData data];
-    NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc] initForWritingWithMutableData:data];
-    archiver.requiresSecureCoding = YES;
+    NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc] initRequiringSecureCoding:YES];
     [archiver encodeObject:properties forKey:@"properties"];
     [archiver finishEncoding];
-    
+
+    NSData *data = [archiver encodedData];
+
     if (TARGET_OS_IPHONE) {
         NSData *secretKey = [NSUserDefaults cookiesKey];
         data = [[data zmEncryptPrefixingIVWithKey:secretKey] mutableCopy];

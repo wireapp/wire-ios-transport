@@ -16,7 +16,6 @@
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // 
 
-
 @import WireSystem;
 @import WireUtilities;
 
@@ -153,6 +152,12 @@ static NSTimeInterval const GraceperiodToRenewAccessToken = 40;
     }
 }
 
+- (void)checkIfRequest:(ZMTransportRequest *)request needsToAttachCookieInURLRequest:(NSMutableURLRequest *)URLRequest;
+{
+    if (request.needsCookie) {
+        [self.cookieStorage setRequestHeaderFieldsOnRequest:URLRequest];
+    }
+}
 
 - (BOOL)canStartRequestWithAccessToken;
 {
