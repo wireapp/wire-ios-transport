@@ -18,7 +18,7 @@
 
 import Foundation
 
-class ServerCertificateTrust: NSObject, BackendTrustProvider {
+final class ServerCertificateTrust: NSObject, BackendTrustProvider {
     let trustData: [TrustData]
     
     init(trustData: [TrustData]) {
@@ -45,10 +45,10 @@ class ServerCertificateTrust: NSObject, BackendTrustProvider {
         let certificate: SecCertificate? = SecTrustGetCertificateAtIndex(serverTrust, 0)
         
         let certificatesCArray = [certificate] as CFArray
-        var trust: SecTrust? = nil
+        var secTrust: SecTrust? = nil
         
-        guard SecTrustCreateWithCertificates(certificatesCArray, policy, &trust) == noErr,
-              let trust = trust else {
+        guard SecTrustCreateWithCertificates(certificatesCArray, policy, &secTrust) == noErr,
+              let trust = secTrust else {
             return nil
         }
         
