@@ -86,7 +86,7 @@ final class ServerCertificateTrust: NSObject, BackendTrustProvider {
     }
     
     
-    func verifyServerTrustWithPinnedKeys(_ serverTrust: SecTrust, _ pinnedKeys: [SecKey]) -> Bool {
+    private func verifyServerTrustWithPinnedKeys(_ serverTrust: SecTrust, _ pinnedKeys: [SecKey]) -> Bool {
         guard SecTrustEvaluateWithError(serverTrust, nil) else {
             return false
         }
