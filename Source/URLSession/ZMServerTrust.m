@@ -63,27 +63,20 @@ static SecKeyRef publicKeyAssociatedWithServerTrust(SecTrustRef const serverTrus
         return nil;
     }
     
-    SecTrustResultType result;
-    if (SecTrustEvaluate(trust, &result) != noErr) {
-        finally();
-        return nil;
+    if (@available(iOS 14.0, *)) {
+        key = SecTrustCopyKey(trust);
+    } else {
+        key = SecTrustCopyPublicKey(trust);
     }
-    
-    key = SecTrustCopyPublicKey(trust);
-        
+
     finally();
     
     return key;
 }
 
 BOOL verifyServerTrustWithPinnedKeys(SecTrustRef const serverTrust, NSArray *pinnedKeys)
-{    
-    SecTrustResultType result;
-    if (SecTrustEvaluate(serverTrust, &result) != noErr) {
-        return NO;
-    }
-    
-    if (result != kSecTrustResultProceed && result != kSecTrustResultUnspecified) {
+{
+    if (SecTrustEvaluateWithError(serverTrust, nil) == NO) {
         return NO;
     }
     
