@@ -47,26 +47,22 @@ class ServerCertificateTrust: NSObject, BackendTrustProvider {
         let certificatesCArray = [certificate] as CFArray
         var trust: SecTrust? = nil
         
-        if SecTrustCreateWithCertificates(certificatesCArray, policy, &trust) != noErr {
+        guard SecTrustCreateWithCertificates(certificatesCArray, policy, &trust) == noErr,
+              let trust = trust else {
             return nil
         }
         
-        var key: SecKey? = nil
+        let key: SecKey?
+        
         if #available(iOS 14.0, *) {
-            if let trust = trust {
-                key = SecTrustCopyKey(trust)
-            }
+            key = SecTrustCopyKey(trust)
         } else {
-            if let trust = trust {
-                var result: SecTrustResultType = SecTrustResultType.invalid
-                if SecTrustEvaluate(trust, &result) != noErr {
-                    return nil
-                }
+            var result: SecTrustResultType = SecTrustResultType.invalid
+            if SecTrustEvaluate(trust, &result) != noErr {
+                return nil
             }
             
-            if let trust = trust {
-                key = SecTrustCopyPublicKey(trust)
-            }
+            key = SecTrustCopyPublicKey(trust)
         }
         
         return key
