@@ -34,8 +34,58 @@ class ServerCertificateTrust: NSObject, BackendTrustProvider {
             .map { trustData in
                 trustData.certificateKey
             }
-            
+        
         return verifyServerTrustWithPinnedKeys(trust, pinnedKeys)
     }
-
+    
+    private func publicKeyAssociatedWithServerTrust(_ serverTrust: SecTrust) -> SecKey? {
+        let policy = SecPolicyCreateBasicX509()
+        
+        // leaf certificate
+        let certificate: SecCertificate? = SecTrustGetCertificateAtIndex(serverTrust, 0)
+        
+        let certificatesCArray = [certificate] as CFArray
+        var trust: SecTrust? = nil
+        
+        if SecTrustCreateWithCertificates(certificatesCArray, policy, &trust) != noErr {
+            return nil
+        }
+        
+        var key: SecKey? = nil
+        if #available(iOS 14.0, *) {
+            if let trust = trust {
+                key = SecTrustCopyKey(trust)
+            }
+        } else {
+            if let trust = trust {
+                var result: SecTrustResultType = SecTrustResultType.invalid
+                if SecTrustEvaluate(trust, &result) != noErr {
+                    return nil
+                }
+            }
+            
+            if let trust = trust {
+                key = SecTrustCopyPublicKey(trust)
+            }
+        }
+        
+        return key
+    }
+    
+    
+    func verifyServerTrustWithPinnedKeys(_ serverTrust: SecTrust, _ pinnedKeys: [SecKey]) -> Bool {
+        guard SecTrustEvaluateWithError(serverTrust, nil) else {
+            return false
+        }
+        
+        guard !pinnedKeys.isEmpty else {
+            return true
+        }
+        
+        guard let publicKey = publicKeyAssociatedWithServerTrust(serverTrust) else {
+            return false
+        }
+        
+        return pinnedKeys.contains(publicKey)
+    }
 }
