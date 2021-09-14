@@ -66,6 +66,12 @@ static SecKeyRef publicKeyAssociatedWithServerTrust(SecTrustRef const serverTrus
     if (@available(iOS 14.0, *)) {
         key = SecTrustCopyKey(trust);
     } else {
+        SecTrustResultType result;
+         if (SecTrustEvaluate(trust, &result) != noErr) {
+             finally();
+             return nil;
+         }
+        
         key = SecTrustCopyPublicKey(trust);
     }
 
