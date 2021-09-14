@@ -38,6 +38,23 @@ final class ServerCertificateTrust: NSObject, BackendTrustProvider {
         return verifyServerTrustWithPinnedKeys(trust, pinnedKeys)
     }
     
+    
+    /// Returns the public key of the leaf certificate associated with the trust object
+    /// 
+    /// To dump certificate data, use
+    ///     CFIndex const certCount = SecTrustGetCertificateCount(serverTrust);
+    /// and
+    ///     SecCertificateRef cert0 = SecTrustGetCertificateAtIndex(serverTrust, 0);
+    ///     SecCertificateRef cert1 = SecTrustGetCertificateAtIndex(serverTrust, 1);
+    /// etc. and then
+    ///     SecCertificateCopyData(cert1)
+    /// to dump the certificate data.
+    ///
+    ///
+    /// Also
+    ///     CFBridgingRelease(SecCertificateCopyValues(cert1, @[kSecOIDX509V1SubjectName], NULL))
+    /// - Parameter serverTrust: SecTrust of server
+    /// - Returns: public key form the trust
     private func publicKeyAssociatedWithServerTrust(_ serverTrust: SecTrust) -> SecKey? {
         let policy = SecPolicyCreateBasicX509()
         
