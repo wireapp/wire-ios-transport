@@ -29,7 +29,8 @@ class BackgroundActivityFactoryTests: XCTestCase {
     override func setUp() {
         super.setUp()
         activityManager = MockBackgroundActivityManager()
-        factory = BackgroundActivityFactory(backgroundTaskTimeout: 2)
+        factory = BackgroundActivityFactory()
+        factory.backgroundTaskTimeout = 2
         factory.activityManager = activityManager
         factory.mainQueue = .global()
     }

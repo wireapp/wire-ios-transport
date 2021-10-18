@@ -72,12 +72,10 @@ private let zmLog = ZMSLog(tag: "background-activity")
     var allTasksEndedHandlers: [() -> Void] = []
 
     /// The upper limit for how long backgrounds tasks are allowed to run
-    private let backgroundTaskTimeout: TimeInterval
+    public var backgroundTaskTimeout: TimeInterval = 60
     private var backgroundTaskTimer: Timer?
 
-    public init(backgroundTaskTimeout: TimeInterval = 60) {
-        self.backgroundTaskTimeout = backgroundTaskTimeout
-        
+    public override init() {
         super.init()
         registerForNotifications()
     }
@@ -287,6 +285,7 @@ extension BackgroundActivityFactory {
                                                        repeats: false,
                                                        block: { [weak self] (timer) in
                                                         self?.mainQueue.async { [weak self] in
+                                                            zmLog.safePublic("Handle expiration when the background task has timed out")
                                                             self?.handleExpiration()
                                                             timer.invalidate()
                                                         }
