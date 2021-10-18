@@ -71,6 +71,17 @@ private let zmLog = ZMSLog(tag: "background-activity")
     var activities: Set<BackgroundActivity> = []
     var allTasksEndedHandlers: [() -> Void] = []
 
+    /// The upper limit for how long backgrounds tasks are allowed to run
+    private let backgroundTaskTimeout: TimeInterval
+    private var backgroundTaskTimer: Timer?
+
+    public init(backgroundTaskTimeout: TimeInterval = 60) {
+        self.backgroundTaskTimeout = backgroundTaskTimeout
+        
+        super.init()
+        registerForNotifications()
+    }
+
     // MARK: - Starting Background Activities
 
     /**
@@ -197,6 +208,7 @@ private let zmLog = ZMSLog(tag: "background-activity")
     }
 
     /// Called on main queue when the background timer is about to expire.
+    @objc
     private func handleExpiration() {
         guard let activityManager = self.activityManager else {
             zmLog.safePublic("Handle expiration: failed, activityManager is nil")
@@ -244,6 +256,49 @@ private let zmLog = ZMSLog(tag: "background-activity")
             self.currentBackgroundTask = nil
         } else {
             zmLog.safePublic("Finishing background task: no current background task")
+        }
+    }
+
+}
+
+// MARK: - Change in application state
+
+extension BackgroundActivityFactory {
+
+    /// Register for change in application state: didEnterBackground
+    func registerObserverForDidEnterBackground(_ object: NSObject, selector: Selector) {
+        NotificationCenter.default.addObserver(object, selector: selector, name: UIApplication.didEnterBackgroundNotification, object: nil)
+    }
+
+    /// Register for change in application state: willEnterForeground
+    func registerObserverForWillEnterForeground(_ object: NSObject, selector: Selector) {
+        NotificationCenter.default.addObserver(object, selector: selector, name: UIApplication.willEnterForegroundNotification, object: nil)
+    }
+
+    private func registerForNotifications() {
+        registerObserverForDidEnterBackground(self, selector: #selector(startTimer))
+        registerObserverForWillEnterForeground(self, selector: #selector(stopTimer))
+    }
+
+    @objc
+    func startTimer() {
+        if backgroundTaskTimer == nil {
+            backgroundTaskTimer = Timer.scheduledTimer(withTimeInterval: backgroundTaskTimeout,
+                                                       repeats: false,
+                                                       block: { [weak self] (timer) in
+                                                        self?.mainQueue.async { [weak self] in
+                                                            self?.handleExpiration()
+                                                            timer.invalidate()
+                                                        }
+                                                       })
+        }
+    }
+
+    @objc
+    func stopTimer() {
+        if backgroundTaskTimer != nil {
+            backgroundTaskTimer?.invalidate()
+            backgroundTaskTimer = nil
         }
     }
 
