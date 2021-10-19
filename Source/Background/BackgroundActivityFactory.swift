@@ -206,7 +206,6 @@ private let zmLog = ZMSLog(tag: "background-activity")
     }
 
     /// Called on main queue when the background timer is about to expire.
-    @objc
     private func handleExpiration() {
         guard let activityManager = self.activityManager else {
             zmLog.safePublic("Handle expiration: failed, activityManager is nil")
