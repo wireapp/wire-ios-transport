@@ -21,7 +21,7 @@ import XCTest
 import WireTesting
 @testable import WireTransport
 
-class BackgroundActivityFactoryTests: XCTestCase {
+class BackgroundActivityFactoryTests: ZMTBaseTest {
 
     var factory: BackgroundActivityFactory!
     var activityManager: MockBackgroundActivityManager!
@@ -208,8 +208,11 @@ class BackgroundActivityFactoryTests: XCTestCase {
         // WHEN
         simulateApplicationDidEnterBackground()
         simulateApplicationWillEnterForeground()
+        // force a wait
+        _ = wait(withTimeout: 3.0, verificationBlock: { return false })
 
         // THEN
+        XCTAssertNil(factory.backgroundTaskTimer)
         XCTAssertTrue(factory.isActive)
         XCTAssertFalse(factory.activities.isEmpty)
         XCTAssertEqual(activityManager.numberOfTasks, 1)

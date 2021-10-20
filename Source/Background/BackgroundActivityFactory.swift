@@ -73,7 +73,7 @@ private let zmLog = ZMSLog(tag: "background-activity")
 
     /// The upper limit for how long backgrounds tasks are allowed to run
     public var backgroundTaskTimeout: TimeInterval = 60
-    private var backgroundTaskTimer: Timer?
+    var backgroundTaskTimer: Timer?
 
     public override init() {
         super.init()
