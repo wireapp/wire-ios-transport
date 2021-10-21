@@ -21,7 +21,7 @@ import XCTest
 import WireTesting
 @testable import WireTransport
 
-class BackgroundActivityFactoryTests: ZMTBaseTest {
+class BackgroundActivityFactoryTests: XCTestCase {
 
     var factory: BackgroundActivityFactory!
     var activityManager: MockBackgroundActivityManager!
@@ -209,7 +209,7 @@ class BackgroundActivityFactoryTests: ZMTBaseTest {
         simulateApplicationDidEnterBackground()
         simulateApplicationWillEnterForeground()
         // force a wait
-        _ = wait(withTimeout: 3.0, verificationBlock: { return false })
+        _ = XCTWaiter.wait(for: [XCTestExpectation(description: "The expiration handler was not called.")], timeout: 3.0)
 
         // THEN
         XCTAssertNil(factory.backgroundTaskTimer)
