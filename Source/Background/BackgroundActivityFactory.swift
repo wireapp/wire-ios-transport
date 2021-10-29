@@ -254,7 +254,7 @@ private let zmLog = ZMSLog(tag: "background-activity")
         } else {
             zmLog.safePublic("Finishing background task: no current background task")
         }
-        backgroundTaskTimer = nil
+        stopTimer()
     }
 
 }
