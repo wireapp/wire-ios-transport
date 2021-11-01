@@ -30,6 +30,7 @@ class BackgroundActivityFactoryTests: XCTestCase {
         super.setUp()
         activityManager = MockBackgroundActivityManager()
         factory = BackgroundActivityFactory.shared
+        factory.backgroundTaskTimeout = 2
         factory.activityManager = activityManager
         factory.mainQueue = .global()
     }
@@ -122,7 +123,7 @@ class BackgroundActivityFactoryTests: XCTestCase {
         XCTAssertEqual(activityManager.numberOfTasks, 0)
     }
     
-    func testItNotifiesThatAllBackgroundActivititesEnded_WhenTaskExpires() {
+    func testItNotifiesThatAllBackgroundActivitiesEnded_WhenTaskExpires() {
         // GIVEN
         let endHandlerExpectation = expectation(description: "The end handler is called.")
         let activity = factory.startBackgroundActivity(withName: "Activity 1") {}
@@ -142,7 +143,7 @@ class BackgroundActivityFactoryTests: XCTestCase {
         XCTAssertEqual(activityManager.numberOfTasks, 0)
     }
     
-    func testItNotifiesThatAllBackgroundActivititesEnded_WhenTaskEnds() throws {
+    func testItNotifiesThatAllBackgroundActivitiesEnded_WhenTaskEnds() throws {
         // GIVEN
         let endHandlerExpectation = expectation(description: "The end handler is called.")
         let activity = try XCTUnwrap(factory.startBackgroundActivity(withName: "Activity 1") {})
@@ -161,7 +162,7 @@ class BackgroundActivityFactoryTests: XCTestCase {
         XCTAssertEqual(activityManager.numberOfTasks, 0)
     }
     
-    func testItDoesntNotifyThatAllBackgroundActivititesEnded_WhenTaskEndsIfThereAreMoreTasks() throws {
+    func testItDoesntNotifyThatAllBackgroundActivitiesEnded_WhenTaskEndsIfThereAreMoreTasks() throws {
         // GIVEN
         let activity1 = try XCTUnwrap(factory.startBackgroundActivity(withName: "Activity 1") {})
         _ = try XCTUnwrap(factory.startBackgroundActivity(withName: "Activity 2") {})
@@ -178,9 +179,75 @@ class BackgroundActivityFactoryTests: XCTestCase {
         XCTAssertFalse(factory.activities.isEmpty)
         XCTAssertEqual(activityManager.numberOfTasks, 1)
     }
+
+    func testItEndsActivities_WhenTheCustomTimeoutHasExpiredInTheBackground() {
+        // GIVEN
+        let _ = factory.startBackgroundActivity(withName: "Activity 1")!
+        let expirationExpectation = expectation(description: "The expiration handler is called.")
+        factory.notifyWhenAllBackgroundActivitiesEnd {
+            expirationExpectation.fulfill()
+        }
+
+        // WHEN
+        simulateApplicationDidEnterBackground()
+
+        // THEN
+        waitForExpectations(timeout: 3, handler: nil)
+        XCTAssertFalse(factory.isActive)
+        XCTAssertTrue(factory.activities.isEmpty)
+        XCTAssertEqual(activityManager.numberOfTasks, 0)
+    }
+
+    func testItDoesNotEndActivities_WhenApplicationComesToTheForeground() {
+        // GIVEN
+        let _ = factory.startBackgroundActivity(withName: "Activity 1")!
+        factory.notifyWhenAllBackgroundActivitiesEnd {
+            XCTFail()
+        }
+
+        // WHEN
+        simulateApplicationDidEnterBackground()
+        simulateApplicationWillEnterForeground()
+        // force a wait
+        _ = XCTWaiter.wait(for: [XCTestExpectation(description: "The expiration handler was not called.")], timeout: 3.0)
+
+        // THEN
+        XCTAssertNil(factory.backgroundTaskTimer)
+        XCTAssertTrue(factory.isActive)
+        XCTAssertFalse(factory.activities.isEmpty)
+        XCTAssertEqual(activityManager.numberOfTasks, 1)
+    }
+
+    func testItEndsBackgroundTaskTimer_WhenAllBackgroundActivitiesAreEnded() {
+        // GIVEN
+        let activity = factory.startBackgroundActivity(withName: "Activity 1")!
+
+        // WHEN
+        simulateApplicationDidEnterBackground()
+        factory.endBackgroundActivity(activity)
+
+        // THEN
+        XCTAssertNil(factory.backgroundTaskTimer)
+        XCTAssertFalse(factory.isActive)
+        XCTAssertTrue(factory.activities.isEmpty)
+        XCTAssertEqual(activityManager.numberOfTasks, 0)
+    }
+
 }
 
 // MARK: - Helpers
+
+extension BackgroundActivityFactoryTests {
+
+    private func simulateApplicationDidEnterBackground() {
+        NotificationCenter.default.post(name: UIApplication.didEnterBackgroundNotification, object: nil)
+    }
+
+    private func simulateApplicationWillEnterForeground() {
+        NotificationCenter.default.post(name: UIApplication.willEnterForegroundNotification, object: nil)
+    }
+
+}
 
 extension BackgroundActivityFactory {
 
