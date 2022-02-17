@@ -169,7 +169,7 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
     self = [super init];
     if (self) {
         self.payload = payload;
-        self.path = path;
+        self.path = [path stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLPathAllowedCharacterSet]];
         self.method = method;
         self.needsAuthentication = (authentication == ZMTransportRequestAuthNeedsAccess || authentication == ZMTransportRequestAuthNeedsCookieAndAccessToken);
         self.needsCookie = (authentication == ZMTransportRequestAuthNeedsCookieAndAccessToken);
