@@ -524,6 +524,7 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
 
 - (void)completeWithResponse:(ZMTransportResponse *)response
 {
+    RequireString(response.apiVersion == self.apiVersion, "Completed request and response should have matching api versions. Request has: %d Response has: %d", response.apiVersion, self.apiVersion);
     response.startOfUploadTimestamp = self.startOfUploadTimestamp;
 
     ZMSDispatchGroup *group = response.dispatchGroup;
