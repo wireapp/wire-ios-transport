@@ -328,7 +328,7 @@
     ZMTransportRequest *transportRequest = [ZMTransportRequest requestWithPath:@"/something" method:ZMMethodPUT payload:@{} apiVersion:0];
     [transportRequest markStartOfUploadTimestamp];
     
-    ZMTransportResponse *response = [ZMTransportResponse responseWithPayload:@{@"name":@"foo"} HTTPStatus:213 transportSessionError:nil];
+    ZMTransportResponse *response = [ZMTransportResponse responseWithPayload:@{@"name":@"foo"} HTTPStatus:213 transportSessionError:nil apiVersion:transportRequest.apiVersion];
     
     // when
     [transportRequest completeWithResponse:response];
@@ -395,7 +395,7 @@
 {
     // given
     XCTestExpectation *expectation = [self expectationWithDescription:@"Completion handler called"];
-    ZMTransportResponse *response = [ZMTransportResponse responseWithPayload:@{@"name":@"foo"} HTTPStatus:213 transportSessionError:nil];
+    ZMTransportResponse *response = [ZMTransportResponse responseWithPayload:@{@"name":@"foo"} HTTPStatus:213 transportSessionError:nil apiVersion:0];
     __block ZMTransportResponse *receivedResponse;
     
     ZMTransportRequest *request = [ZMTransportRequest requestWithPath:@"" method:ZMMethodGET payload:nil apiVersion:0];
@@ -420,7 +420,7 @@
     XCTestExpectation *expectation1 = [self expectationWithDescription:@"Completion 1 handler called"];
     XCTestExpectation *expectation2 = [self expectationWithDescription:@"Completion 2 handler called"];
     XCTestExpectation *expectation3 = [self expectationWithDescription:@"Completion 3 handler called"];
-    ZMTransportResponse *response = [ZMTransportResponse responseWithPayload:@{} HTTPStatus:200 transportSessionError:nil];
+    ZMTransportResponse *response = [ZMTransportResponse responseWithPayload:@{} HTTPStatus:200 transportSessionError:nil apiVersion:0];
 
     __block NSMutableString *responses = [[NSMutableString alloc] init];
 
