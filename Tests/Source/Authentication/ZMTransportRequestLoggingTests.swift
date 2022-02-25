@@ -39,7 +39,7 @@ final class ZMTransportRequestLoggingTests: ZMTBaseTest {
         let requestDescription = ZMTransportRequest(path: "/test",
                                                     method: .methodGET,
                                                     payload: payload as ZMTransportData,
-                                                    apiVersion: 0).description
+                                                    apiVersion: .v0).description
         
         //then
         XCTAssertTrue(requestDescription.contains("password = \"<redacted>\""))

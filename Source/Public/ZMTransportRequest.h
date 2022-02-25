@@ -20,6 +20,7 @@
 
 #import <Foundation/Foundation.h>
 #import <WireSystem/WireSystem.h>
+#import <WireTransport/ZMAPIVersion.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -89,25 +90,25 @@ typedef NS_ENUM(int8_t, ZMTransportAccept) {
 + (ZMTransportRequestMethod)methodFromString:(NSString *)string;
 
 /// Returns a request that needs authentication, ie. @c ZMTransportRequestAuthNeedsAccess
-- (instancetype)initWithPath:(NSString *)path method:(ZMTransportRequestMethod)method payload:(nullable id <ZMTransportData>)payload apiVersion:(int)apiVersion;
-- (instancetype)initWithPath:(NSString *)path method:(ZMTransportRequestMethod)method payload:(nullable id <ZMTransportData>)payload authentication:(ZMTransportRequestAuth)authentication apiVersion:(int)apiVersion;
+- (instancetype)initWithPath:(NSString *)path method:(ZMTransportRequestMethod)method payload:(nullable id <ZMTransportData>)payload apiVersion:(ZMAPIVersion)apiVersion;
+- (instancetype)initWithPath:(NSString *)path method:(ZMTransportRequestMethod)method payload:(nullable id <ZMTransportData>)payload authentication:(ZMTransportRequestAuth)authentication apiVersion:(ZMAPIVersion)apiVersion;
 
-+ (instancetype)requestWithPath:(NSString *)path method:(ZMTransportRequestMethod)method payload:(nullable id <ZMTransportData>)payload apiVersion:(int)apiVersion;
-+ (instancetype)requestWithPath:(NSString *)path method:(ZMTransportRequestMethod)method payload:(nullable id <ZMTransportData>)payload shouldCompress:(BOOL)shouldCompress apiVersion:(int)apiVersion;
++ (instancetype)requestWithPath:(NSString *)path method:(ZMTransportRequestMethod)method payload:(nullable id <ZMTransportData>)payload apiVersion:(ZMAPIVersion)apiVersion;
++ (instancetype)requestWithPath:(NSString *)path method:(ZMTransportRequestMethod)method payload:(nullable id <ZMTransportData>)payload shouldCompress:(BOOL)shouldCompress apiVersion:(ZMAPIVersion)apiVersion;
 
-+ (instancetype)requestGetFromPath:(NSString *)path apiVersion:(int)apiVersion;
-+ (instancetype)compressedGetFromPath:(NSString *)path apiVersion:(int)apiVersion;
-+ (instancetype)uploadRequestWithFileURL:(NSURL *)url path:(NSString *)path contentType:(NSString *)contentType apiVersion:(int)apiVersion;
++ (instancetype)requestGetFromPath:(NSString *)path apiVersion:(ZMAPIVersion)apiVersion;
++ (instancetype)compressedGetFromPath:(NSString *)path apiVersion:(ZMAPIVersion)apiVersion;
++ (instancetype)uploadRequestWithFileURL:(NSURL *)url path:(NSString *)path contentType:(NSString *)contentType apiVersion:(ZMAPIVersion)apiVersion;
 
-+ (instancetype)emptyPutRequestWithPath:(NSString *)path apiVersion:(int)apiVersion;
-+ (instancetype)imageGetRequestFromPath:(NSString *)path apiVersion:(int)apiVersion;
++ (instancetype)emptyPutRequestWithPath:(NSString *)path apiVersion:(ZMAPIVersion)apiVersion;
++ (instancetype)imageGetRequestFromPath:(NSString *)path apiVersion:(ZMAPIVersion)apiVersion;
 
 /// Creates a request with the given @c binary data for the body and the given @c type to be used as the content type.
 /// @c type is a (Uniform Type Identifier) UTI.
 /// @link https://en.wikipedia.org/wiki/Uniform_Type_Identifier @/link
 /// @link https://developer.apple.com/library/ios/documentation/General/Conceptual/DevPedia-CocoaCore/UniformTypeIdentifier.html @/link
-- (instancetype)initWithPath:(NSString *)path method:(ZMTransportRequestMethod)method binaryData:(nullable NSData *)data type:(nullable NSString *)type contentDisposition:(nullable NSDictionary *)contentDisposition apiVersion:(int)apiVersion;
-- (instancetype)initWithPath:(NSString *)path method:(ZMTransportRequestMethod)method binaryData:(nullable NSData *)data type:(nullable NSString *)type contentDisposition:(nullable NSDictionary *)contentDisposition shouldCompress:(BOOL)shouldCompress apiVersion:(int)apiVersion;
+- (instancetype)initWithPath:(NSString *)path method:(ZMTransportRequestMethod)method binaryData:(nullable NSData *)data type:(nullable NSString *)type contentDisposition:(nullable NSDictionary *)contentDisposition apiVersion:(ZMAPIVersion)apiVersion;
+- (instancetype)initWithPath:(NSString *)path method:(ZMTransportRequestMethod)method binaryData:(nullable NSData *)data type:(nullable NSString *)type contentDisposition:(nullable NSDictionary *)contentDisposition shouldCompress:(BOOL)shouldCompress apiVersion:(ZMAPIVersion)apiVersion;
 
 
 @property (nonatomic, readonly) NSString *methodAsString;
@@ -131,7 +132,7 @@ typedef NS_ENUM(int8_t, ZMTransportAccept) {
 /// In order to correctly handle the response to this request, the api version must
 /// be taking into account. Each request is paired with a response, so the api version
 /// of the response can be derived from this value.
-@property (nonatomic, readonly) int apiVersion;
+@property (nonatomic, readonly) ZMAPIVersion apiVersion;
 
 /// If true, the request should only be sent through background session
 @property (nonatomic, readonly) BOOL shouldUseOnlyBackgroundSession;
@@ -165,16 +166,16 @@ typedef NS_ENUM(int8_t, ZMTransportAccept) {
 
 @interface ZMTransportRequest (ImageUpload)
 
-+ (_Null_unspecified instancetype)postRequestWithPath:(NSString *)path imageData:(NSData *)data contentDisposition:(NSDictionary *)contentDisposition apiVersion:(int)apiVersion;
-+ (_Null_unspecified instancetype)multipartRequestWithPath:(NSString *)path imageData:(NSData *)data metaData:(NSDictionary *)metaData apiVersion:(int)apiVersion;
-+ (_Null_unspecified instancetype)multipartRequestWithPath:(NSString *)path imageData:(NSData *)data metaData:(NSDictionary *)metaData mediaContentType:(NSString *)mediaContentType apiVersion:(int)apiVersion;
++ (_Null_unspecified instancetype)postRequestWithPath:(NSString *)path imageData:(NSData *)data contentDisposition:(NSDictionary *)contentDisposition apiVersion:(ZMAPIVersion)apiVersion;
++ (_Null_unspecified instancetype)multipartRequestWithPath:(NSString *)path imageData:(NSData *)data metaData:(NSDictionary *)metaData apiVersion:(ZMAPIVersion)apiVersion;
++ (_Null_unspecified instancetype)multipartRequestWithPath:(NSString *)path imageData:(NSData *)data metaData:(NSDictionary *)metaData mediaContentType:(NSString *)mediaContentType apiVersion:(ZMAPIVersion)apiVersion;
 
 + (instancetype)multipartRequestWithPath:(NSString *)path
                                imageData:(NSData *)data
                                 metaData:(NSData *)metaData
                      metaDataContentType:(NSString *)metaDataContentType
                         mediaContentType:(NSString *)mediaContentType
-                              apiVersion:(int)apiVersion;
+                              apiVersion:(ZMAPIVersion)apiVersion;
 
 - (nullable NSArray *)multipartBodyItems;
 
