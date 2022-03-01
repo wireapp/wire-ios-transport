@@ -21,7 +21,7 @@
 /// Represents the backend API versions supported by the client.
 ///
 /// Remove versions to drop support, add versions to add support.
-/// Any changes made here are consider breaking and the compiler
+/// Any changes made here are considered breaking and the compiler
 /// can then be used to ensure that changes can be accounted for.
 
 typedef NS_ENUM(NSInteger, ZMAPIVersion) {

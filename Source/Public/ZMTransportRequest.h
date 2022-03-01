@@ -130,7 +130,7 @@ typedef NS_ENUM(int8_t, ZMTransportAccept) {
 /// The api version for which this request was made against.
 ///
 /// In order to correctly handle the response to this request, the api version must
-/// be taking into account. Each request is paired with a response, so the api version
+/// be taken into account. Each request is paired with a response, so the api version
 /// of the response can be derived from this value.
 @property (nonatomic, readonly) ZMAPIVersion apiVersion;
 

@@ -70,10 +70,10 @@ typedef NS_ENUM(uint8_t, ZMTransportResponseStatus) {
 
 @property (nonatomic, nullable) NSDate *startOfUploadTimestamp;
 
-/// The api version for associated with the response.
+/// The api version associated with the response.
 ///
 /// In order to correctly handle the response, the api version must
-/// be taking into account, since the response may change over different
+/// be taken into account, since the response may change over different
 /// versions of the same endpoint.
 @property (nonatomic, readonly) int apiVersion;
 @end
