@@ -19,6 +19,7 @@
 
 #import <Foundation/Foundation.h>
 #import <WireTransport/ZMTransportData.h>
+#import <WireTransport/ZMAPIVersion.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -43,14 +44,14 @@ typedef NS_ENUM(uint8_t, ZMTransportResponseStatus) {
 
 @interface ZMTransportResponse : NSObject
 
-- (instancetype)initWithHTTPURLResponse:(NSHTTPURLResponse *)HTTPResponse data:(nullable NSData *)data error:(nullable NSError *)error;
+- (instancetype)initWithHTTPURLResponse:(NSHTTPURLResponse *)HTTPResponse data:(nullable NSData *)data error:(nullable NSError *)error apiVersion:(ZMAPIVersion)apiVersion;
 
-- (instancetype)initWithImageData:(NSData *)imageData HTTPStatus:(NSInteger)status transportSessionError:(nullable NSError *)error headers:(nullable NSDictionary *)headers;
+- (instancetype)initWithImageData:(NSData *)imageData HTTPStatus:(NSInteger)status transportSessionError:(nullable NSError *)error headers:(nullable NSDictionary *)headers apiVersion:(ZMAPIVersion)apiVersion;
 
-- (instancetype)initWithPayload:(nullable id<ZMTransportData>)payload HTTPStatus:(NSInteger)status transportSessionError:(nullable NSError *)error headers:(nullable NSDictionary *)headers;
-+ (instancetype)responseWithPayload:(nullable id<ZMTransportData>)payload HTTPStatus:(NSInteger)status transportSessionError:(nullable NSError *)error headers:(nullable NSDictionary *)headers;
-+ (instancetype)responseWithPayload:(nullable id<ZMTransportData>)payload HTTPStatus:(NSInteger)status transportSessionError:(nullable NSError *)error;
-+ (instancetype)responseWithTransportSessionError:(NSError *)error;
+- (instancetype)initWithPayload:(nullable id<ZMTransportData>)payload HTTPStatus:(NSInteger)status transportSessionError:(nullable NSError *)error headers:(nullable NSDictionary *)headers apiVersion:(ZMAPIVersion)apiVersion;
++ (instancetype)responseWithPayload:(nullable id<ZMTransportData>)payload HTTPStatus:(NSInteger)status transportSessionError:(nullable NSError *)error headers:(nullable NSDictionary *)headers apiVersion:(ZMAPIVersion)apiVersion;
++ (instancetype)responseWithPayload:(nullable id<ZMTransportData>)payload HTTPStatus:(NSInteger)status transportSessionError:(nullable NSError *)error apiVersion:(ZMAPIVersion)apiVersion;
++ (instancetype)responseWithTransportSessionError:(NSError *)error apiVersion:(ZMAPIVersion)apiVersion;
 
 @property (nonatomic, readonly, nullable) id<ZMTransportData> payload;
 @property (nonatomic, readonly, nullable) NSData * imageData;
@@ -68,6 +69,13 @@ typedef NS_ENUM(uint8_t, ZMTransportResponseStatus) {
 - (nullable NSString *)payloadLabel;
 
 @property (nonatomic, nullable) NSDate *startOfUploadTimestamp;
+
+/// The api version associated with the response.
+///
+/// In order to correctly handle the response, the api version must
+/// be taken into account, since the response may change over different
+/// versions of the same endpoint.
+@property (nonatomic, readonly) int apiVersion;
 @end
 
 
