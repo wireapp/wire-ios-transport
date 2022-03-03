@@ -25,6 +25,20 @@ import Foundation
 /// can then be used to ensure that changes can be accounted for.
 
 @objc
-public enum APIVersion: Int32, CaseIterable {
+public enum APIVersion: Int32 {
     case v0 = 0
+}
+
+// MARK: - CaseIterable
+
+extension APIVersion: CaseIterable {}
+
+// MARK: - Comparable
+
+extension APIVersion: Comparable {
+
+    public static func < (lhs: Self, rhs: Self) -> Bool {
+        return lhs.rawValue < rhs.rawValue
+    }
+
 }
