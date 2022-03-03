@@ -134,6 +134,30 @@
     XCTAssertFalse(request.shouldFailInsteadOfRetry);
 }
 
+- (void)testThatRequestWithBinaryDataSetsPropertiesWithAPIVersion;
+{
+    // given
+    int apiVersion = 5;
+    NSString * const path = @"/some/path";
+    NSString * const expectedPath = [NSString stringWithFormat:@"/v%d%@", apiVersion, path];
+    ZMTransportRequestMethod const method = ZMMethodPOST;
+    NSData * const data = [NSData dataWithBytes:((const char []){'z', 'q'}) length:2];
+    NSDictionary * const disposition = @{@"zasset": [NSNull null], @"conv_id": [NSUUID createUUID].transportString};
+
+    // when
+    ZMTransportRequest *request = [[ZMTransportRequest alloc] initWithPath:path method:method binaryData:data type:(__bridge id) kUTTypePNG contentDisposition:disposition apiVersion:apiVersion];
+
+    // then
+    XCTAssertNotNil(request);
+    XCTAssertNil(request.payload);
+    XCTAssertEqualObjects(request.path, expectedPath);
+    XCTAssertEqual(request.method, method);
+    XCTAssertEqualObjects(request.contentDisposition, disposition);
+    XCTAssertEqualObjects(request.binaryData, data);
+    XCTAssertEqualObjects(request.binaryDataType, (__bridge id) kUTTypePNG);
+    XCTAssertFalse(request.shouldFailInsteadOfRetry);
+}
+
 - (void)testThatFileUploadRequestSetsProperties;
 {
     // given
@@ -148,6 +172,30 @@
     XCTAssertNotNil(request);
     XCTAssertNil(request.payload);
     XCTAssertEqualObjects(request.path, path);
+    XCTAssertEqual(request.method, ZMMethodPOST);
+    XCTAssertNil(request.contentDisposition);
+    XCTAssertNil(request.binaryData);
+    XCTAssertEqualObjects(fileURL, request.fileUploadURL);
+    XCTAssertTrue(request.shouldUseOnlyBackgroundSession);
+    XCTAssertTrue(request.shouldFailInsteadOfRetry);
+}
+
+- (void)testThatFileUploadRequestSetsPropertiesWithAPIVersion;
+{
+    // given
+    int apiVersion = 5;
+    NSString * const path = @"/some/path";
+    NSString * const expectedPath = [NSString stringWithFormat:@"/v%d%@", apiVersion, path];
+    NSURL *fileURL = [NSURL URLWithString:@"/url/to/some/private/file"];
+
+    // when
+    NSString *contentType = @"multipart/mixed; boundary=frontier";
+    ZMTransportRequest *request = [ZMTransportRequest uploadRequestWithFileURL:fileURL path:path contentType:contentType apiVersion:apiVersion];
+
+    // then
+    XCTAssertNotNil(request);
+    XCTAssertNil(request.payload);
+    XCTAssertEqualObjects(request.path, expectedPath);
     XCTAssertEqual(request.method, ZMMethodPOST);
     XCTAssertNil(request.contentDisposition);
     XCTAssertNil(request.binaryData);
@@ -180,6 +228,32 @@
     XCTAssertEqualObjects([httpRequest valueForHTTPHeaderField:@"Content-Type"], @"application/json");
 }
 
+- (void)testThatEmptyPUTRequestSetsPropertiesWithAPIVersion;
+{
+    // given
+    int apiVersion = 5;
+    NSString * const path = @"/some/path";
+    NSString * const expectedPath = [NSString stringWithFormat:@"/v%d%@", apiVersion, path];
+    ZMTransportRequestMethod const method = ZMMethodPUT;
+
+    // when
+    ZMTransportRequest *request = [ZMTransportRequest emptyPutRequestWithPath:path apiVersion:apiVersion];
+    NSMutableURLRequest *httpRequest = [[NSMutableURLRequest alloc] init];
+    [request setBodyDataAndMediaTypeOnHTTPRequest:httpRequest];
+
+    // when
+
+    // then
+    XCTAssertNotNil(request);
+    XCTAssertNil(request.payload);
+    XCTAssertEqualObjects(request.path, expectedPath);
+    XCTAssertEqual(request.method, method);
+    XCTAssertNil(request.contentDisposition);
+    XCTAssertFalse(request.shouldFailInsteadOfRetry);
+    XCTAssertEqualObjects(request.binaryData, [NSData data]);
+    XCTAssertEqualObjects([httpRequest valueForHTTPHeaderField:@"Content-Type"], @"application/json");
+}
+
 - (void)testThatImagePostRequestSetsProperties;
 {
     // given
@@ -194,6 +268,29 @@
     XCTAssertNotNil(request);
     XCTAssertNil(request.payload);
     XCTAssertEqualObjects(request.path, path);
+    XCTAssertEqual(request.method, ZMMethodPOST);
+    XCTAssertEqualObjects(request.contentDisposition, disposition);
+    XCTAssertEqualObjects(request.binaryData, data);
+    XCTAssertFalse(request.shouldFailInsteadOfRetry);
+    XCTAssertEqualObjects(request.binaryDataType, (__bridge id) kUTTypeJPEG);
+}
+
+- (void)testThatImagePostRequestSetsPropertiesWithAPIVersion;
+{
+    // given
+    int apiVersion = 5;
+    NSString * const path = @"/some/path";
+    NSString * const expectedPath = [NSString stringWithFormat:@"/v%d%@", apiVersion, path];
+    NSData * const data = [self verySmallJPEGData];
+    NSDictionary * const disposition = @{@"zasset": [NSNull null], @"conv_id": [NSUUID createUUID].transportString};
+
+    // when
+    ZMTransportRequest *request = [ZMTransportRequest postRequestWithPath:path imageData:data contentDisposition:disposition apiVersion:apiVersion];
+
+    // then
+    XCTAssertNotNil(request);
+    XCTAssertNil(request.payload);
+    XCTAssertEqualObjects(request.path, expectedPath);
     XCTAssertEqual(request.method, ZMMethodPOST);
     XCTAssertEqualObjects(request.contentDisposition, disposition);
     XCTAssertEqualObjects(request.binaryData, data);
@@ -246,6 +343,44 @@
     XCTAssertEqualObjects(imageItem.headers, @{@"Content-MD5": [[data zmMD5Digest] base64EncodedStringWithOptions:0]});
     XCTAssertEqualObjects(imageItem.data, data);
     
+    NSString *expectedContentType = [NSString stringWithFormat:@"multipart/mixed; boundary=%@", boundary];
+    XCTAssertEqualObjects(request.binaryDataType, expectedContentType);
+}
+
+- (void)testThatMultipartImagePostRequestSetsPropertiesWithAPIVersion;
+{
+    // given
+    int apiVersion = 5;
+    NSString * const path = @"/some/path";
+    NSString * const expectedPath = [NSString stringWithFormat:@"/v%d%@", apiVersion, path];
+    NSData * const data = [self verySmallJPEGData];
+    NSDictionary * const disposition = @{@"zasset": [NSNull null], @"conv_id": [NSUUID createUUID].transportString};
+
+    NSString *boundary = @"frontier";
+    NSData *metaDataData = [NSJSONSerialization dataWithJSONObject:disposition options:0 error:NULL];
+
+    // when
+    ZMTransportRequest *request = [ZMTransportRequest multipartRequestWithPath:path imageData:data metaData:disposition apiVersion:apiVersion];
+
+    // then
+    XCTAssertNotNil(request);
+    XCTAssertNil(request.payload);
+    XCTAssertEqualObjects(request.path, expectedPath);
+    XCTAssertEqual(request.method, ZMMethodPOST);
+    XCTAssertNil(request.contentDisposition);
+    XCTAssertFalse(request.shouldFailInsteadOfRetry);
+    NSArray *items = [request multipartBodyItems];
+    XCTAssertEqual(items.count, 2u);
+
+    ZMMultipartBodyItem *metadataItem = items.firstObject;
+    XCTAssertEqualObjects(metadataItem.contentType, @"application/json; charset=utf-8");
+    XCTAssertEqualObjects(metadataItem.data, metaDataData);
+
+    ZMMultipartBodyItem *imageItem = items.lastObject;
+    XCTAssertEqualObjects(imageItem.contentType, @"image/jpeg");
+    XCTAssertEqualObjects(imageItem.headers, @{@"Content-MD5": [[data zmMD5Digest] base64EncodedStringWithOptions:0]});
+    XCTAssertEqualObjects(imageItem.data, data);
+
     NSString *expectedContentType = [NSString stringWithFormat:@"multipart/mixed; boundary=%@", boundary];
     XCTAssertEqualObjects(request.binaryDataType, expectedContentType);
 }
