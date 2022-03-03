@@ -211,7 +211,7 @@ static NSTimeInterval const GraceperiodToRenewAccessToken = 40;
 
 
 
-- (BOOL)consumeRequestWithTask:(NSURLSessionTask *)task data:(NSData *)data session:(ZMURLSession *)session shouldRetry:(BOOL)shouldRetry apiVersion:(ZMAPIVersion)apiVersion;
+- (BOOL)consumeRequestWithTask:(NSURLSessionTask *)task data:(NSData *)data session:(ZMURLSession *)session shouldRetry:(BOOL)shouldRetry apiVersion:(int)apiVersion;
 {
     if (self.currentAccessTokenTask != task) {
         return NO;
@@ -222,7 +222,7 @@ static NSTimeInterval const GraceperiodToRenewAccessToken = 40;
 }
 
 
-- (void)didCompleteAccessTokenRequestWithTask:(NSURLSessionTask *)task data:(NSData *)data session:(ZMURLSession *)session shouldRetry:(BOOL)shouldRetry apiVersion:(ZMAPIVersion)apiVersion
+- (void)didCompleteAccessTokenRequestWithTask:(NSURLSessionTask *)task data:(NSData *)data session:(ZMURLSession *)session shouldRetry:(BOOL)shouldRetry apiVersion:(int)apiVersion
 {
     ZMLogInfo(@"<---- Access token task completed: %@ // %@", task, task.error);
     ZMLogInfo(@"<---- Access token URL session: %@", session.description);
@@ -265,7 +265,7 @@ static NSTimeInterval const GraceperiodToRenewAccessToken = 40;
 }
 
 
-- (ZMTransportResponse *)transportResponseFromURLResponse:(NSURLResponse *)URLResponse data:(NSData *)data error:(NSError *)error apiVersion:(ZMAPIVersion)apiVersion;
+- (ZMTransportResponse *)transportResponseFromURLResponse:(NSURLResponse *)URLResponse data:(NSData *)data error:(NSError *)error apiVersion:(int)apiVersion;
 {
     NSHTTPURLResponse *HTTPResponse = (NSHTTPURLResponse *) URLResponse;
     return [[ZMTransportResponse alloc] initWithHTTPURLResponse:HTTPResponse data:data error:error apiVersion:apiVersion];
