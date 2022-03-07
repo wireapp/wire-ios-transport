@@ -147,7 +147,7 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
 @property (nonatomic) float progress;
 @property (nonatomic) NSMutableDictionary <NSString *, NSString *> *additionalHeaderFields;
 @property (nonatomic) BackgroundActivity *activity;
-@property (nonatomic) ZMAPIVersion apiVersion;
+@property (nonatomic) int apiVersion;
 
 @end
 
@@ -155,17 +155,17 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
 
 @implementation ZMTransportRequest
 
-- (instancetype)initWithPath:(NSString *)path method:(ZMTransportRequestMethod)method payload:(id <ZMTransportData>)payload apiVersion:(ZMAPIVersion)apiVersion
+- (instancetype)initWithPath:(NSString *)path method:(ZMTransportRequestMethod)method payload:(id <ZMTransportData>)payload apiVersion:(int)apiVersion
 {
     return [self initWithPath:path method:method payload:payload authentication:ZMTransportRequestAuthNeedsAccess shouldCompress:NO apiVersion: apiVersion];
 }
 
-- (instancetype)initWithPath:(NSString *)path method:(ZMTransportRequestMethod)method payload:(id <ZMTransportData>)payload shouldCompress:(BOOL)shouldCompress apiVersion:(ZMAPIVersion)apiVersion
+- (instancetype)initWithPath:(NSString *)path method:(ZMTransportRequestMethod)method payload:(id <ZMTransportData>)payload shouldCompress:(BOOL)shouldCompress apiVersion:(int)apiVersion
 {
     return [self initWithPath:path method:method payload:payload authentication:ZMTransportRequestAuthNeedsAccess shouldCompress:shouldCompress apiVersion: apiVersion];
 }
 
-- (instancetype)initWithPath:(NSString *)path method:(ZMTransportRequestMethod)method payload:(id <ZMTransportData>)payload authentication:(ZMTransportRequestAuth)authentication shouldCompress:(BOOL)shouldCompress apiVersion:(ZMAPIVersion)apiVersion;
+- (instancetype)initWithPath:(NSString *)path method:(ZMTransportRequestMethod)method payload:(id <ZMTransportData>)payload authentication:(ZMTransportRequestAuth)authentication shouldCompress:(BOOL)shouldCompress apiVersion:(int)apiVersion;
 {
     self = [super init];
     if (self) {
@@ -185,35 +185,35 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
     return self;
 }
 
-- (instancetype)initWithPath:(NSString *)path method:(ZMTransportRequestMethod)method payload:(id <ZMTransportData>)payload authentication:(ZMTransportRequestAuth)authentication apiVersion:(ZMAPIVersion)apiVersion;
+- (instancetype)initWithPath:(NSString *)path method:(ZMTransportRequestMethod)method payload:(id <ZMTransportData>)payload authentication:(ZMTransportRequestAuth)authentication apiVersion:(int)apiVersion;
 {
     return [self initWithPath:path method:method payload:payload authentication:authentication shouldCompress:NO apiVersion:apiVersion];
 }
 
-+ (instancetype)requestWithPath:(NSString *)path method:(ZMTransportRequestMethod)method payload:(id <ZMTransportData>)payload apiVersion:(ZMAPIVersion)apiVersion
++ (instancetype)requestWithPath:(NSString *)path method:(ZMTransportRequestMethod)method payload:(id <ZMTransportData>)payload apiVersion:(int)apiVersion
 {
     return [[self class] requestWithPath:path method:method payload:payload shouldCompress:NO apiVersion:apiVersion];
 }
 
 
-+ (instancetype)requestWithPath:(NSString *)path method:(ZMTransportRequestMethod)method payload:(id <ZMTransportData>)payload shouldCompress:(BOOL)shouldCompress apiVersion:(ZMAPIVersion)apiVersion
++ (instancetype)requestWithPath:(NSString *)path method:(ZMTransportRequestMethod)method payload:(id <ZMTransportData>)payload shouldCompress:(BOOL)shouldCompress apiVersion:(int)apiVersion
 {
     ZMTransportRequest *result = [[self alloc] initWithPath:path method:method payload:payload shouldCompress:shouldCompress apiVersion:apiVersion];
     Require(result.hasRequiredPayload);
     return result;
 }
 
-+ (instancetype)requestGetFromPath:(NSString *)path apiVersion:(ZMAPIVersion)apiVersion
++ (instancetype)requestGetFromPath:(NSString *)path apiVersion:(int)apiVersion
 {
     return [self requestWithPath:path method:ZMMethodGET payload:nil apiVersion:apiVersion];
 }
 
-+ (instancetype)compressedGetFromPath:(NSString *)path apiVersion:(ZMAPIVersion)apiVersion
++ (instancetype)compressedGetFromPath:(NSString *)path apiVersion:(int)apiVersion
 {
     return [self requestWithPath:path method:ZMMethodGET payload:nil shouldCompress:YES apiVersion:apiVersion];
 }
 
-+ (instancetype)uploadRequestWithFileURL:(NSURL *)url path:(NSString *)path contentType:(NSString *)contentType apiVersion:(ZMAPIVersion)apiVersion;
++ (instancetype)uploadRequestWithFileURL:(NSURL *)url path:(NSString *)path contentType:(NSString *)contentType apiVersion:(int)apiVersion;
 {
     ZMTransportRequest *request = [[self.class alloc] initWithPath:path
                                                             method:ZMMethodPOST
@@ -227,13 +227,13 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
     return request;
 }
 
-+ (instancetype)emptyPutRequestWithPath:(NSString *)path apiVersion:(ZMAPIVersion)apiVersion;
++ (instancetype)emptyPutRequestWithPath:(NSString *)path apiVersion:(int)apiVersion;
 {
     NSString *type = (__bridge NSString *) kUTTypeJSON;
     return [[self alloc] initWithPath:path method:ZMMethodPUT binaryData:[NSData data] type:type contentDisposition:nil apiVersion:apiVersion];
 }
 
-+ (instancetype)imageGetRequestFromPath:(NSString *)path apiVersion:(ZMAPIVersion)apiVersion;
++ (instancetype)imageGetRequestFromPath:(NSString *)path apiVersion:(int)apiVersion;
 {
     ZMTransportRequest *r = [self requestGetFromPath:path apiVersion:apiVersion];
     r.acceptedResponseMediaTypes = ZMTransportAcceptImage;
@@ -241,12 +241,12 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
     return r;
 }
 
-- (instancetype)initWithPath:(NSString *)path method:(ZMTransportRequestMethod)method binaryData:(NSData *)data type:(NSString *)type contentDisposition:(NSDictionary *)contentDisposition apiVersion:(ZMAPIVersion)apiVersion;
+- (instancetype)initWithPath:(NSString *)path method:(ZMTransportRequestMethod)method binaryData:(NSData *)data type:(NSString *)type contentDisposition:(NSDictionary *)contentDisposition apiVersion:(int)apiVersion;
 {
     return [self initWithPath:path method:method binaryData:data type:type contentDisposition:contentDisposition shouldCompress:NO apiVersion:apiVersion];
 }
 
-- (instancetype)initWithPath:(NSString *)path method:(ZMTransportRequestMethod)method binaryData:(NSData *)data type:(NSString *)type contentDisposition:(NSDictionary *)contentDisposition shouldCompress:(BOOL)shouldCompress apiVersion:(ZMAPIVersion)apiVersion;
+- (instancetype)initWithPath:(NSString *)path method:(ZMTransportRequestMethod)method binaryData:(NSData *)data type:(NSString *)type contentDisposition:(NSDictionary *)contentDisposition shouldCompress:(BOOL)shouldCompress apiVersion:(int)apiVersion;
 {
     self = [super init];
     if (self != nil) {
@@ -734,7 +734,7 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
 
 @implementation ZMTransportRequest (AssetGet)
 
-+ (instancetype)assetGetRequestFromPath:(NSString *)path assetToken:(NSString *)token apiVersion:(ZMAPIVersion)apiVersion;
++ (instancetype)assetGetRequestFromPath:(NSString *)path assetToken:(NSString *)token apiVersion:(int)apiVersion;
 {
     ZMTransportRequest *r = [self requestGetFromPath:path apiVersion:apiVersion];
     
@@ -751,7 +751,7 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
 
 @implementation ZMTransportRequest (ImageUpload)
 
-+ (instancetype)postRequestWithPath:(NSString *)path imageData:(NSData *)data contentDisposition:(NSDictionary *)contentDisposition apiVersion:(ZMAPIVersion)apiVersion;
++ (instancetype)postRequestWithPath:(NSString *)path imageData:(NSData *)data contentDisposition:(NSDictionary *)contentDisposition apiVersion:(int)apiVersion;
 {
     VerifyReturnNil(data != nil);
     CGImageSourceRef source = CGImageSourceCreateWithData((__bridge CFDataRef) data, NULL);
@@ -766,7 +766,7 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
     return result;
 }
 
-+ (instancetype)multipartRequestWithPath:(NSString *)path imageData:(NSData *)imageData metaData:(NSDictionary *)metaData apiVersion:(ZMAPIVersion)apiVersion
++ (instancetype)multipartRequestWithPath:(NSString *)path imageData:(NSData *)imageData metaData:(NSDictionary *)metaData apiVersion:(int)apiVersion
 {
     VerifyReturnNil(imageData != nil);
     CGImageSourceRef source = CGImageSourceCreateWithData((__bridge CFDataRef) imageData, NULL);
@@ -782,13 +782,13 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
     return [self multipartRequestWithPath:path imageData:imageData metaData:metaData mediaContentType:mediaType apiVersion:apiVersion];
 }
 
-+ (instancetype)multipartRequestWithPath:(NSString *)path imageData:(NSData *)imageData metaData:(NSDictionary *)metaData mediaContentType:(NSString *)mediaContentType apiVersion:(ZMAPIVersion)apiVersion
++ (instancetype)multipartRequestWithPath:(NSString *)path imageData:(NSData *)imageData metaData:(NSDictionary *)metaData mediaContentType:(NSString *)mediaContentType apiVersion:(int)apiVersion
 {
     NSData *metaDataData = [NSJSONSerialization dataWithJSONObject:metaData options:0 error:NULL];
     return [self multipartRequestWithPath:path imageData:imageData metaData:metaDataData metaDataContentType:@"application/json; charset=utf-8" mediaContentType:mediaContentType apiVersion:apiVersion];
 }
 
-+ (instancetype)multipartRequestWithPath:(NSString *)path imageData:(NSData *)imageData metaData:(NSData *)metaData metaDataContentType:(NSString *)metaDataContentType mediaContentType:(NSString *)mediaContentType apiVersion:(ZMAPIVersion)apiVersion;
++ (instancetype)multipartRequestWithPath:(NSString *)path imageData:(NSData *)imageData metaData:(NSData *)metaData metaDataContentType:(NSString *)metaDataContentType mediaContentType:(NSString *)mediaContentType apiVersion:(int)apiVersion;
 {
     VerifyReturnNil(imageData != nil);
     
