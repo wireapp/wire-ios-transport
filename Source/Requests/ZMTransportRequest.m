@@ -170,7 +170,7 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
     self = [super init];
     if (self) {
         self.payload = payload;
-        self.path = path;
+        self.path = apiVersion == 0 ? path : [NSString stringWithFormat:@"/v%d%@", apiVersion, path];
         self.method = method;
         self.needsAuthentication = (authentication == ZMTransportRequestAuthNeedsAccess || authentication == ZMTransportRequestAuthNeedsCookieAndAccessToken);
         self.needsCookie = (authentication == ZMTransportRequestAuthNeedsCookieAndAccessToken);
@@ -250,7 +250,7 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
 {
     self = [super init];
     if (self != nil) {
-        self.path = path;
+        self.path = apiVersion == 0 ? path : [NSString stringWithFormat:@"/v%d%@", apiVersion, path];
         self.method = method;
         self.binaryData = data;
         self.binaryDataType = type;
