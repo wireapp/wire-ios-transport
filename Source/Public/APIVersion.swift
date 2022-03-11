@@ -27,6 +27,7 @@ import Foundation
 @objc
 public enum APIVersion: Int32 {
     case v0 = 0
+    case v1 = 1
 }
 
 // MARK: - CaseIterable
