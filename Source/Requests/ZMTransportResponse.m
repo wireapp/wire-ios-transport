@@ -75,16 +75,16 @@ static NSString* ZMLogTag ZM_UNUSED = ZMT_LOG_TAG_NETWORK;
 
 - (instancetype)initWithImageData:(NSData *)imageData HTTPStatus:(NSInteger)status transportSessionError:(NSError *)error headers:(NSDictionary *)headers apiVersion:(int)apiVersion;
 {
-    return [self initWithImageData:imageData payload:nil HTTPStatus:status networkError:error headers:headers];
+    return [self initWithImageData:imageData payload:nil HTTPStatus:status networkError:error headers:headers apiVersion:apiVersion];
 }
 
 
 - (instancetype)initWithPayload:(id<ZMTransportData>)payload HTTPStatus:(NSInteger)status transportSessionError:(NSError *)error headers:(NSDictionary *)headers apiVersion:(int)apiVersion;
 {
-    return [self initWithImageData:nil payload:payload HTTPStatus:status networkError:error headers:headers];
+    return [self initWithImageData:nil payload:payload HTTPStatus:status networkError:error headers:headers apiVersion:apiVersion];
 }
 
-- (instancetype)initWithImageData:(NSData *)imageData payload:(id<ZMTransportData>)payload HTTPStatus:(NSInteger)status networkError:(NSError *)error headers:(NSDictionary *)headers
+- (instancetype)initWithImageData:(NSData *)imageData payload:(id<ZMTransportData>)payload HTTPStatus:(NSInteger)status networkError:(NSError *)error headers:(NSDictionary *)headers apiVersion:(int)apiVersion
 {
     self = [super init];
     if(self) {
@@ -94,7 +94,8 @@ static NSString* ZMLogTag ZM_UNUSED = ZMT_LOG_TAG_NETWORK;
         _imageData = [imageData copy];
         _HTTPStatus = status;
         _headers = headers;
-        
+        _apiVersion = apiVersion;
+
         self.rawResponse = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@""] statusCode:status HTTPVersion:@"HTTP/1.1" headerFields:headers];
         self.rawData = self.imageData ?: [ZMTransportCodec encodedTransportData:self.payload];
     }
