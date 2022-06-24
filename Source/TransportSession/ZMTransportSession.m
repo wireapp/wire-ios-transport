@@ -112,8 +112,8 @@ static NSInteger const DefaultMaximumRequests = 6;
     // https://tools.ietf.org/html/rfc2616
     configuration.HTTPShouldUsePipelining = YES;
     configuration.HTTPMaximumConnectionsPerHost = 1;
-    
-    configuration.TLSMinimumSupportedProtocol = kTLSProtocol12;
+
+    configuration.TLSMinimumSupportedProtocolVersion = tls_protocol_version_TLSv12;
     
     configuration.URLCache = nil;
 }
