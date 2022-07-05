@@ -121,7 +121,7 @@ class ZMTransportSessionTests_Initialization: ZMTBaseTest {
         check(identifier: backgroundConfiguration.identifier, contains: [userID])
         XCTAssertEqual(backgroundConfiguration.sharedContainerIdentifier, containerIdentifier)
         
-        XCTAssertEqual(Set<String>([foregroundSession.identifier, backgroundSession.identifier]).count, 3, "All identifiers should be unique")
+        XCTAssertEqual(Set<String>([foregroundSession.identifier, backgroundSession.identifier]).count, 2, "All identifiers should be unique")
     }
     
 }

@@ -2352,9 +2352,9 @@ static XCTestCase *currentTestCase;
     XCTestExpectation *expectation = [self expectationWithDescription:@"It should get the resumed background session tasks"];
     ZMTransportRequest *foregroundRequest = [ZMTransportRequest requestGetFromPath:@"/some/path/foreground" apiVersion:0];
     ZMTransportRequest *backgroundRequest = [ZMTransportRequest requestGetFromPath:@"/some/path/background" apiVersion:0];
-    
+
     // expect
-    
+
     NSURLSessionTask *expectedTask = [NSURLSessionTask new];
     id backgroundSessionMock = [OCMockObject mockForClass:ZMURLSession.class];
     [[(id)backgroundSessionMock expect] isBackgroundSession];
@@ -2382,7 +2382,7 @@ static XCTestCase *currentTestCase;
         XCTAssertEqual(backgroundTasks.count, 1lu);
         [expectation fulfill];
     }];
-    
+
     XCTAssertTrue([self waitForCustomExpectationsWithTimeout:0.5]);
 }
 
