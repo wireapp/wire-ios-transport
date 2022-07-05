@@ -385,7 +385,7 @@ static XCTestCase *currentTestCase;
     [[[(id)self.URLSession stub] andReturnValue:@NO] isBackgroundSession];
     [self verifyMockLater:self.URLSession];
     
-    self.sessionsDirectory = [[MockSessionsDirectory alloc] initWithForegroundSession:self.URLSession backgroundSession:nil voipSession:nil];
+    self.sessionsDirectory = [[MockSessionsDirectory alloc] initWithForegroundSession:self.URLSession backgroundSession:nil];
     
     self.environment = [[MockEnvironment alloc] init];
     self.environment.backendURL = [NSURL URLWithString:@"https://base.example.com"];
@@ -758,9 +758,8 @@ static XCTestCase *currentTestCase;
     self.environment.backendWSURL = url;
     ZMURLSession *foregroundSession = [OCMockObject niceMockForClass:ZMURLSession.class];
     ZMURLSession *backgroundSession = [OCMockObject niceMockForClass:ZMURLSession.class];
-    ZMURLSession *voipSession = [OCMockObject niceMockForClass:ZMURLSession.class];
 
-    MockSessionsDirectory *directory = [[MockSessionsDirectory alloc] initWithForegroundSession:foregroundSession backgroundSession:backgroundSession voipSession:voipSession];
+    MockSessionsDirectory *directory = [[MockSessionsDirectory alloc] initWithForegroundSession:foregroundSession backgroundSession:backgroundSession];
     ZMTransportSession *sut = [[ZMTransportSession alloc]
                                initWithURLSessionsDirectory:directory
                                requestScheduler:(id) self.scheduler
@@ -2355,6 +2354,7 @@ static XCTestCase *currentTestCase;
     ZMTransportRequest *backgroundRequest = [ZMTransportRequest requestGetFromPath:@"/some/path/background" apiVersion:0];
     
     // expect
+    
     NSURLSessionTask *expectedTask = [NSURLSessionTask new];
     id backgroundSessionMock = [OCMockObject mockForClass:ZMURLSession.class];
     [[(id)backgroundSessionMock expect] isBackgroundSession];
