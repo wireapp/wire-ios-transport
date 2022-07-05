@@ -2355,7 +2355,7 @@ static XCTestCase *currentTestCase;
 
     // expect
 
-    NSURLSessionTask *expectedTask = [NSURLSessionTask new];
+    NSURLSessionTask *expectedTask = [[NSURLSession sharedSession] dataTaskWithURL:[NSURL URLWithString:@"test"]];
     id backgroundSessionMock = [OCMockObject mockForClass:ZMURLSession.class];
     [[(id)backgroundSessionMock expect] isBackgroundSession];
     [(NSURLSession *)[[backgroundSessionMock stub] andReturn:[NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:self.name]] configuration];
