@@ -51,6 +51,7 @@ import WireUtilities
     case conversationAccessModeUpdate = 15
     case conversationMessageTimerUpdate = 31
     case conversationReceiptModeUpdate = 34
+    case conversationMLSWelcome = 41
     case userConnection = 16
     case userNew = 17
     case userUpdate = 18
@@ -74,7 +75,7 @@ import WireUtilities
     case teamMemberUpdate = 30
     case featureConfigUpdate = 40
 
-    // Current max value: featureConfigUpdate = 40
+    // Current max value: conversationMLSWelcome = 41
 }
 
 extension ZMUpdateEventType {
@@ -117,6 +118,8 @@ extension ZMUpdateEventType {
             return "conversation.access-update"
         case .conversationReceiptModeUpdate:
             return "conversation.receipt-mode-update"
+        case .conversationMLSWelcome:
+            return "conversation.mls-welcome"
         case .userConnection:
             return "user.connection"
         case .userNew:
