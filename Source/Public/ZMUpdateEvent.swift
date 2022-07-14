@@ -122,7 +122,7 @@ extension ZMUpdateEventType {
         case .conversationMLSWelcome:
             return "conversation.mls-welcome"
         case .conversationMLSMessageAdd:
-            reutrn "conversation.mls-message-add"
+            return "conversation.mls-message-add"
         case .userConnection:
             return "user.connection"
         case .userNew:
