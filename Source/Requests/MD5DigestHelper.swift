@@ -18,31 +18,11 @@
 
 import Foundation
 
-/// Represents the backend API versions supported by the client.
-///
-/// Remove versions to drop support, add versions to add support.
-/// Any changes made here are considered breaking and the compiler
-/// can then be used to ensure that changes can be accounted for.
+@objcMembers
+public class MD5DigestHelper: NSObject {
 
-@objc
-public enum APIVersion: Int32 {
-
-    case v0 = 0
-    case v1 = 1
-    case v2 = 2
-
-}
-
-// MARK: - CaseIterable
-
-extension APIVersion: CaseIterable {}
-
-// MARK: - Comparable
-
-extension APIVersion: Comparable {
-
-    public static func < (lhs: Self, rhs: Self) -> Bool {
-        return lhs.rawValue < rhs.rawValue
+    static func md5Digest(for data: Data) -> Data {
+        return data.zmMD5Digest()
     }
 
 }
