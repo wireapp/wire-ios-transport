@@ -129,7 +129,7 @@ class StarscreamPushChannel: NSObject, PushChannelType {
             configuration.connectionProxyDictionary = proxyDictionary
             configuration.httpShouldUsePipelining = true
 
-//            webSocket?.configuration = configuration
+            webSocket?.configuration = configuration
         }
 
         if let queue = workQueue.underlyingQueue {
