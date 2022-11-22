@@ -125,7 +125,7 @@ class StarscreamPushChannel: NSObject, PushChannelType {
         if let proxySettings = environment.proxy {
             let proxyDictionary = proxySettings.socks5Settings(proxyUsername: proxyUsername, proxyPassword: proxyPassword).asDictionary()
 
-            var configuration = URLSessionConfiguration.default
+            let configuration = URLSessionConfiguration.default
             configuration.connectionProxyDictionary = proxyDictionary
             configuration.httpShouldUsePipelining = true
 
