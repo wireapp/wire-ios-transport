@@ -211,8 +211,7 @@ extension StarscreamPushChannel: ZMTimerClient {
 
 @available(iOSApplicationExtension 13.0, iOS 13.0, *)
 extension StarscreamPushChannel: WebSocketDelegate {
-
-    func didReceive(event: Starscream.WebSocketEvent, client: Starscream.WebSocketClient) {
+    func didReceive(event: WebSocketEvent, client: WebSocketClient) {
         switch event {
 
         case .connected(_):

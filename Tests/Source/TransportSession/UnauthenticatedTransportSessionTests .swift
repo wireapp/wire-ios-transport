@@ -83,6 +83,17 @@ final class UnauthenticatedTransportSessionTests: ZMTBaseTest {
 
     override func setUp() {
         super.setUp()
+        setupSut(ready: true)
+    }
+
+
+    override func tearDown() {
+        sessionMock = nil
+        sut = nil
+        super.tearDown()
+    }
+
+    private func setupSut(ready: Bool) {
         sessionMock = MockURLSession()
         let endpoints = BackendEndpoints(backendURL: url,
                                          backendWSURL: url,
@@ -104,15 +115,11 @@ final class UnauthenticatedTransportSessionTests: ZMTBaseTest {
                                               proxyPassword: nil,
                                               urlSession: sessionMock,
                                               reachability: MockReachability(),
-                                              applicationVersion: "1.0")
+                                              applicationVersion: "1.0",
+                                              ready: ready)
     }
 
-    override func tearDown() {
-        sessionMock = nil
-        sut = nil
-        super.tearDown()
-    }
-    
+
     func testThatEnqueueOneTime_IncrementsTheRequestCounter() {
         // when
         (0..<3).forEach { _ in
@@ -258,6 +265,35 @@ final class UnauthenticatedTransportSessionTests: ZMTBaseTest {
         
         // then
         XCTAssertEqual(result, .success)
+    }
+
+    func testEnqueueRequestWhenNotReady_DoesNothing() {
+        // GIVEN
+        setupSut(ready: false)
+
+        let task = MockTask()
+        sessionMock.nextMockTask = task
+
+        // WHEN
+        let result = sut.enqueueRequest { .init(getFromPath: "/", apiVersion: 0) }
+
+        // THEN
+        XCTAssertEqual(task.resumeCallCount, 0)
+        XCTAssertEqual(result, .success)
+    }
+
+    func testEnqueueOneTimeWhenNotReady_DoesNothing() {
+        // GIVEN
+        setupSut(ready: false)
+
+        let task = MockTask()
+        sessionMock.nextMockTask = task
+
+        // WHEN
+        sut.enqueueOneTime(.init(getFromPath: "/", apiVersion: 0))
+
+        // THEN
+        XCTAssertEqual(task.resumeCallCount, 0)
     }
 }
 
