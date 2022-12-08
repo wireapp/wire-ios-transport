@@ -27,7 +27,7 @@ import Foundation
 // Wrapper around Swift-only EnvironmentType so that it would be useable in Objective-C
 @objc public class EnvironmentTypeProvider: NSObject {
     public var value: EnvironmentType
-    init(environmentType: EnvironmentType) {
+    public init(environmentType: EnvironmentType) {
         self.value = environmentType
     }
 }
