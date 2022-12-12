@@ -20,7 +20,7 @@ import Foundation
 
 @available(iOSApplicationExtension 13.0, iOS 13.0, *)
 @objcMembers
-class NativePushChannel: NSObject, PushChannelType {
+class NativePushChannel: NSObject, PushChannelType, URLSessionTaskDelegate {
 
     var clientID: String? {
         didSet {
@@ -59,6 +59,8 @@ class NativePushChannel: NSObject, PushChannelType {
     var workQueue: OperationQueue
     var pingTimer: ZMTimer?
 
+    var urlSessionMonitoring: URLSessionMonitoring!
+
     required init(scheduler: ZMTransportRequestScheduler,
                   userAgentString: String,
                   environment: BackendEnvironmentProvider,
@@ -66,9 +68,10 @@ class NativePushChannel: NSObject, PushChannelType {
         self.environment = environment
         self.scheduler = scheduler
         self.workQueue = queue
-
         super.init()
-        self.session = URLSession(configuration: .ephemeral, delegate: self, delegateQueue: queue)
+
+        self.urlSessionMonitoring = URLSessionMonitoring(delegate: self)
+        self.session = URLSession(configuration: .ephemeral, delegate: self.urlSessionMonitoring, delegateQueue: queue)
     }
 
     func close() {
