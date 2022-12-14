@@ -64,11 +64,12 @@ extension URLSessionMonitoring: URLSessionTaskDelegate {
         }
     }
 
-    public func urlSession(_ session: URLSession, task: URLSessionTask, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-        multicast.call {
-            $0.urlSession?(session, task: task, didReceive: challenge, completionHandler: completionHandler)
-        }
-    }
+//    public func urlSession(_ session: URLSession, task: URLSessionTask, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+//        multicast.call {
+//            print("🐶", $0.debugDescription)
+//            $0.urlSession?(session, task: task, didReceive: challenge, completionHandler: completionHandler)
+//        }
+//    }
 
     public func urlSession(_ session: URLSession, task: URLSessionTask, needNewBodyStream completionHandler: @escaping (InputStream?) -> Void) {
         multicast.call {
