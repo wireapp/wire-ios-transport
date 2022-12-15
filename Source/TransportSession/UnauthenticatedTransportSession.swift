@@ -52,12 +52,14 @@ private let zmLog = ZMSLog(tag: "Network")
 
 fileprivate extension ZMTransportRequest {
     func log() -> Void {
+        RemoteMonitoring.remoteLogger?.log(message: "[Unauthenticated] ----> Request: \(description)", error: nil, attributes: nil, level: .debug)
         zmLog.debug("[Unauthenticated] ----> Request: \(description)")
     }
 }
 
 fileprivate extension ZMTransportResponse {
     func log() -> Void {
+        RemoteMonitoring.remoteLogger?.log(message: "[Unauthenticated] <---- Response: \(description)", error: nil, attributes: nil, level: .debug)
         zmLog.debug("[Unauthenticated] <---- Response: \(description)")
     }
 }
@@ -76,7 +78,6 @@ final public class UnauthenticatedTransportSession: NSObject, UnauthenticatedTra
     private var session: SessionProtocol!
     private let userAgent: ZMUserAgent
     public var environment: BackendEnvironmentProvider
-
     fileprivate let reachability: ReachabilityProvider
     
     public init(environment: BackendEnvironmentProvider,
@@ -89,6 +90,7 @@ final public class UnauthenticatedTransportSession: NSObject, UnauthenticatedTra
         self.userAgent = ZMUserAgent()
 
         super.init()
+
         let configuration = URLSessionConfiguration.ephemeral
         configuration.httpAdditionalHeaders = ["User-Agent": ZMUserAgent.userAgent(withAppVersion: applicationVersion)]
         

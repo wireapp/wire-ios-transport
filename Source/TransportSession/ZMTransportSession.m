@@ -277,7 +277,7 @@ static NSInteger const DefaultMaximumRequests = 6;
             }
         }];
 
-        self.remoteMonitoring = [[RemoteMonitoring alloc] init];
+        self.remoteMonitoring = [[RemoteMonitoring alloc] initWithLevel: LogLevelInfo];
     }
     return self;
 }

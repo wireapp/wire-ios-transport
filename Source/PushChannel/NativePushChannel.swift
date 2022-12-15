@@ -20,7 +20,7 @@ import Foundation
 
 @available(iOSApplicationExtension 13.0, iOS 13.0, *)
 @objcMembers
-class NativePushChannel: NSObject, PushChannelType, URLSessionTaskDelegate {
+class NativePushChannel: NSObject, PushChannelType {
 
     var clientID: String? {
         didSet {
@@ -66,6 +66,7 @@ class NativePushChannel: NSObject, PushChannelType, URLSessionTaskDelegate {
         self.environment = environment
         self.scheduler = scheduler
         self.workQueue = queue
+
         super.init()
         self.session = URLSession(configuration: .ephemeral, delegate: self, delegateQueue: queue)
     }
