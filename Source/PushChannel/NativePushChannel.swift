@@ -59,8 +59,6 @@ class NativePushChannel: NSObject, PushChannelType, URLSessionTaskDelegate {
     var workQueue: OperationQueue
     var pingTimer: ZMTimer?
 
-    var urlSessionMonitoring: URLSessionMonitoring!
-
     required init(scheduler: ZMTransportRequestScheduler,
                   userAgentString: String,
                   environment: BackendEnvironmentProvider,
@@ -69,9 +67,7 @@ class NativePushChannel: NSObject, PushChannelType, URLSessionTaskDelegate {
         self.scheduler = scheduler
         self.workQueue = queue
         super.init()
-
-        self.urlSessionMonitoring = URLSessionMonitoring(delegate: self)
-        self.session = URLSession(configuration: .ephemeral, delegate: self.urlSessionMonitoring, delegateQueue: queue)
+        self.session = URLSession(configuration: .ephemeral, delegate: self, delegateQueue: queue)
     }
 
     func close() {

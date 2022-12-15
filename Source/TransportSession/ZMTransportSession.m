@@ -84,6 +84,7 @@ static NSInteger const DefaultMaximumRequests = 6;
 @property (nonatomic, readwrite) id<ReachabilityProvider, TearDownCapable> reachability;
 @property (nonatomic) id reachabilityObserverToken;
 @property (nonatomic) ZMAtomicInteger *numberOfRequestsInProgress;
+@property (nonatomic, strong) RemoteMonitoring* remoteMonitoring;
 
 @end
 
@@ -275,6 +276,8 @@ static NSInteger const DefaultMaximumRequests = 6;
                 self.requestLoopDetectionCallback(path);
             }
         }];
+
+        self.remoteMonitoring = [[RemoteMonitoring alloc] init];
     }
     return self;
 }
@@ -442,6 +445,7 @@ static NSInteger const DefaultMaximumRequests = 6;
     
     NSData *bodyData = URLRequest.HTTPBody;
     URLRequest.HTTPBody = nil;
+    [self.remoteMonitoring log:[NSString stringWithFormat:@"----> Request: %@\n%@", URLRequest.allHTTPHeaderFields, request] error: nil];
     ZMLogPublic(@"Request: %@", request.safeForLoggingDescription);
     ZMLogInfo(@"----> Request: %@\n%@", URLRequest.allHTTPHeaderFields, request);
     NSURLSessionTask *task = [session taskWithRequest:URLRequest bodyData:(bodyData.length == 0) ? nil : bodyData transportRequest:request];
@@ -497,6 +501,8 @@ static NSInteger const DefaultMaximumRequests = 6;
     ZMTransportResponse *response = [self transportResponseFromURLResponse:httpResponse data:data error:transportError apiVersion:request.apiVersion];
     ZMLogPublic(@"Response to %@: %@", request.safeForLoggingDescription,  response.safeForLoggingDescription);
     ZMLogInfo(@"<---- Response to %@ %@ (status %u): %@", [ZMTransportRequest stringForMethod:request.method], request.path, (unsigned) httpResponse.statusCode, response);
+
+    [self.remoteMonitoring log:[NSString stringWithFormat:@"<---- Response to %@ %@ (status %u): %@", [ZMTransportRequest stringForMethod:request.method], request.path, (unsigned) httpResponse.statusCode, response] error:nil];
     ZMLogInfo(@"URL Session is %@", session.description);
     if (response.result == ZMTransportResponseStatusExpired) {
         [request completeWithResponse:response];

@@ -68,7 +68,7 @@ fileprivate extension ZMTransportResponse {
 /// be notified when a cookie was parsed from a response of a request made using this transport session.
 /// When cookie data became available it should be used to create a `ZMPersistentCookieStorage` and
 /// to create a regular transport session with it.
-final public class UnauthenticatedTransportSession: NSObject, UnauthenticatedTransportSessionProtocol, URLSessionMonitoringDelegate {
+final public class UnauthenticatedTransportSession: NSObject, UnauthenticatedTransportSessionProtocol {
 
     private let maximumNumberOfRequests: Int = 3
     private var numberOfRunningRequests = ZMAtomicInteger(integer: 0)
@@ -76,7 +76,7 @@ final public class UnauthenticatedTransportSession: NSObject, UnauthenticatedTra
     private var session: SessionProtocol!
     private let userAgent: ZMUserAgent
     public var environment: BackendEnvironmentProvider
-    public var urlSessionMonitoring: URLSessionMonitoring!
+
     fileprivate let reachability: ReachabilityProvider
     
     public init(environment: BackendEnvironmentProvider,
@@ -89,11 +89,10 @@ final public class UnauthenticatedTransportSession: NSObject, UnauthenticatedTra
         self.userAgent = ZMUserAgent()
 
         super.init()
-        self.urlSessionMonitoring = URLSessionMonitoring(delegate: self)
         let configuration = URLSessionConfiguration.ephemeral
         configuration.httpAdditionalHeaders = ["User-Agent": ZMUserAgent.userAgent(withAppVersion: applicationVersion)]
         
-        self.session = urlSession ?? URLSession(configuration: configuration, delegate: self.urlSessionMonitoring, delegateQueue: nil)
+        self.session = urlSession ?? URLSession(configuration: configuration, delegate: self, delegateQueue: nil)
     }
     
     
