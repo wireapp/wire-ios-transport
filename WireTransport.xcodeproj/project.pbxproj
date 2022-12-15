@@ -3,11 +3,11 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		01C7C7BC29433E95008C1C6D /* URLSessionMonitoring.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C7C7BB29433E95008C1C6D /* URLSessionMonitoring.swift */; };
+		01E1B793294B260100CEA021 /* RemoteLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E1B792294B260000CEA021 /* RemoteLogger.swift */; };
 		0928E2051BA023A30057232E /* NSData_MultipartTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0928E2041BA023A30057232E /* NSData_MultipartTests.m */; };
 		095840201B9591F1004555F9 /* NSData+Multipart.m in Sources */ = {isa = PBXBuildFile; fileRef = 0958401E1B9591F1004555F9 /* NSData+Multipart.m */; };
 		095840221B959200004555F9 /* NSData+Multipart.h in Headers */ = {isa = PBXBuildFile; fileRef = 095840211B959200004555F9 /* NSData+Multipart.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -200,7 +200,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		01C7C7BB29433E95008C1C6D /* URLSessionMonitoring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLSessionMonitoring.swift; sourceTree = "<group>"; };
+		01E1B792294B260000CEA021 /* RemoteLogger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RemoteLogger.swift; path = Source/Public/RemoteLogger.swift; sourceTree = SOURCE_ROOT; };
 		0928E2041BA023A30057232E /* NSData_MultipartTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSData_MultipartTests.m; sourceTree = "<group>"; };
 		0958401E1B9591F1004555F9 /* NSData+Multipart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+Multipart.m"; sourceTree = "<group>"; };
 		095840211B959200004555F9 /* NSData+Multipart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Multipart.h"; sourceTree = "<group>"; };
@@ -737,7 +737,7 @@
 				F1D1281F21C2665E0090045E /* BackendEndpoints.swift */,
 				F1D1281621C1556D0090045E /* BackendEnvironmentProvider.swift */,
 				F1D1281721C1556E0090045E /* TrustData.swift */,
-				01C7C7BB29433E95008C1C6D /* URLSessionMonitoring.swift */,
+				01E1B792294B260000CEA021 /* RemoteLogger.swift */,
 			);
 			path = Public;
 			sourceTree = "<group>";
@@ -1057,7 +1057,6 @@
 				870F5E671FBF24AD004841E3 /* NetworkSocket.swift in Sources */,
 				5499FFCA1B31C66D00835C8B /* ZMPushChannelConnection.m in Sources */,
 				54CA15BD1B32F2C1008D3787 /* NSObject+ZMTransportEncoding.m in Sources */,
-				01C7C7BC29433E95008C1C6D /* URLSessionMonitoring.swift in Sources */,
 				54CA15AD1B32F2C1008D3787 /* ZMExponentialBackoff.m in Sources */,
 				F1D1280221C020470090045E /* MockEnvironment.swift in Sources */,
 				8756C44A2178C97A00627F1F /* BackendEnvironment.swift in Sources */,
@@ -1075,6 +1074,7 @@
 				54CA15C31B32F2C1008D3787 /* ZMTransportData.m in Sources */,
 				54CA15C51B32F2C1008D3787 /* NSError+ZMTransportSession.m in Sources */,
 				7038D63E27D0D286004BE280 /* APIVersion.swift in Sources */,
+				01E1B793294B260100CEA021 /* RemoteLogger.swift in Sources */,
 				166D18BB230EE8A8001288CD /* TransportSession.swift in Sources */,
 				87B2B79B20BC476E00799AB9 /* ZMTransportRequest.swift in Sources */,
 				54CA15C11B32F2C1008D3787 /* ZMTransportCodec.m in Sources */,
