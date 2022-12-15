@@ -9,17 +9,17 @@
 import Foundation
 
 public protocol RemoteLogger {
-    func log(message: String, error: Error?, attributes: [String: Encodable]?, level: RemoteMonitoring.LogLevel)
+    func log(message: String, error: Error?, attributes: [String: Encodable]?, level: RemoteMonitoring.Level)
 }
 
 extension RemoteLogger {
-    func log(message: String, error: Error? = nil, attributes: [String: Encodable]? = nil, level: RemoteMonitoring.LogLevel = .debug) {
+    func log(message: String, error: Error? = nil, attributes: [String: Encodable]? = nil, level: RemoteMonitoring.Level = .debug) {
         RemoteMonitoring.remoteLogger?.log(message: message, error: error, attributes: attributes, level: level)
     }
 }
 
 public class RemoteMonitoring: NSObject  {
-    @objc public enum LogLevel : Int {
+    @objc public enum Level : Int {
         case debug
         case info
         case notice
@@ -28,9 +28,9 @@ public class RemoteMonitoring: NSObject  {
         case critical
     }
 
-    var level: LogLevel
+    var level: Level
 
-    @objc init(level: LogLevel) {
+    @objc init(level: Level) {
         self.level = level
     }
 
