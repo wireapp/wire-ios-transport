@@ -28,6 +28,7 @@ public class RemoteMonitoring: NSObject  {
         case critical
     }
 
+
     var level: Level
 
     @objc init(level: Level) {
@@ -39,4 +40,34 @@ public class RemoteMonitoring: NSObject  {
     @objc func log(_ message: String, error: Error? = nil) {
         Self.remoteLogger?.log(message: message, error: nil, attributes: nil, level: level)
     }
+
+    @objc func log(request: NSURLRequest) {
+        let info = RequestLog(request)
+
+        do {
+            let data = try JSONEncoder().encode(info)
+            let jsonString = String(data: data, encoding: .utf8)
+            let message = "REQUEST: \(jsonString ?? request.description)"
+            Self.remoteLogger?.log(message: message, error: nil, attributes: nil, level: level)
+        } catch {
+            let message = "REQUEST: \(request.description)"
+            Self.remoteLogger?.log(message: message, error: error, attributes: nil, level: level)
+        }
+    }
+
+    @objc func log(response: HTTPURLResponse) {
+        let info = ResponseLog(response)
+
+        do {
+            let data = try JSONEncoder().encode(info)
+            let jsonString = String(data: data, encoding: .utf8)
+            let message = "RESPONSE: \(jsonString ?? response.description)"
+            Self.remoteLogger?.log(message: message, error: nil, attributes: nil, level: level)
+        } catch {
+            let message = "RESPONSE: \(response.description)"
+            Self.remoteLogger?.log(message: message, error: error, attributes: nil, level: level)
+        }
+    }
 }
+
+

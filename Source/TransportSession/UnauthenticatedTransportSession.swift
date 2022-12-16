@@ -52,14 +52,12 @@ private let zmLog = ZMSLog(tag: "Network")
 
 fileprivate extension ZMTransportRequest {
     func log() -> Void {
-        RemoteMonitoring.remoteLogger?.log(message: "[Unauthenticated] ----> Request: \(description)", error: nil, attributes: nil, level: .debug)
         zmLog.debug("[Unauthenticated] ----> Request: \(description)")
     }
 }
 
 fileprivate extension ZMTransportResponse {
     func log() -> Void {
-        RemoteMonitoring.remoteLogger?.log(message: "[Unauthenticated] <---- Response: \(description)", error: nil, attributes: nil, level: .debug)
         zmLog.debug("[Unauthenticated] <---- Response: \(description)")
     }
 }
@@ -79,6 +77,8 @@ final public class UnauthenticatedTransportSession: NSObject, UnauthenticatedTra
     private let userAgent: ZMUserAgent
     public var environment: BackendEnvironmentProvider
     fileprivate let reachability: ReachabilityProvider
+
+    private let remoteMonitoring: RemoteMonitoring
     
     public init(environment: BackendEnvironmentProvider,
                 urlSession: SessionProtocol? = nil,
@@ -88,7 +88,7 @@ final public class UnauthenticatedTransportSession: NSObject, UnauthenticatedTra
         self.environment = environment
         self.reachability = reachability
         self.userAgent = ZMUserAgent()
-
+        self.remoteMonitoring = RemoteMonitoring(level: .debug)
         super.init()
 
         let configuration = URLSessionConfiguration.ephemeral
@@ -135,13 +135,14 @@ final public class UnauthenticatedTransportSession: NSObject, UnauthenticatedTra
     private func enqueueRequest(_ request: ZMTransportRequest) -> DataTaskProtocol {
         guard let urlRequest = URL(string: request.path, relativeTo: baseURL).flatMap(NSMutableURLRequest.init) else { preconditionFailure() }
         urlRequest.configure(with: request)
-        request.log()
+        remoteMonitoring.log(request: urlRequest)
         
         let task = session.task(with: urlRequest as URLRequest) { [weak self] data, response, error in
             
             var transportResponse: ZMTransportResponse!
             
             if let response = response as? HTTPURLResponse {
+                self?.remoteMonitoring.log(response: response)
                 transportResponse = ZMTransportResponse(httpurlResponse: response, data: data, error: error, apiVersion: request.apiVersion)
             }
             else if let error = error {
@@ -153,6 +154,7 @@ final public class UnauthenticatedTransportSession: NSObject, UnauthenticatedTra
             }
             
             transportResponse?.log()
+
             request.complete(with: transportResponse)
             self?.decrement(notify: true)
         }
