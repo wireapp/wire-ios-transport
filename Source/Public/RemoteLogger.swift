@@ -29,7 +29,7 @@ extension RemoteLogger {
 }
 
 public class RemoteMonitoring: NSObject  {
-    @objc public enum Level : Int {
+    @objc public enum Level: Int {
         case debug
         case info
         case notice
