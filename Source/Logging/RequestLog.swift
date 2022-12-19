@@ -34,6 +34,7 @@ struct RequestLog: Codable {
             filteredHeaders[value] = "*******"
         }
         self.headers = filteredHeaders
+        self.method = request.httpMethod
     }
 
     static let authorizedHeaderFields = ["Accept",
@@ -93,7 +94,7 @@ extension URL {
             .compactMap { $0 }
             .filter({ !$0.isEmpty })
             .joined(separator: "/")
-        endpoint.append(components?.query !=  nil ? "?\(components!.query!)" : "")
+        endpoint.append(components?.query?.isEmpty == false ? "?\(components!.query!)" : "")
         return endpoint
     }
 }
