@@ -76,11 +76,8 @@ extension URL {
         let visibleCharactersCount = 3
 
         var components = URLComponents(string: self.absoluteString)
-
-        var pathComponents: [String] = components?.path.components(separatedBy: "/") ?? []
-        pathComponents.enumerated().forEach { item in
-            pathComponents[item.offset] = item.element.truncated(visibleCharactersCount)
-        }
+        let path = components?.path ?? ""
+        let pathComponents = path.components(separatedBy: "/").map { $0.truncated(visibleCharactersCount }
 
         let queryItems = components?.queryItems ?? []
         let queryComponents = queryItems.map { $0.redactedAndTruncated(visibleCharactersCount }
