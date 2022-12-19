@@ -82,12 +82,8 @@ extension URL {
             pathComponents[item.offset] = item.element.truncated(visibleCharactersCount)
         }
 
-        var queryComponents = components?.queryItems ?? []
-        queryComponents.enumerated().forEach { item in
-            var redactedItem = item.element
-            redactedItem.value = redactedItem.value?.redactedAndTruncated(visibleCharactersCount)
-            queryComponents[item.offset] = redactedItem
-        }
+        let queryItems = components?.queryItems ?? []
+        let queryComponents = queryItems.map { $0.redactedAndTruncated(visibleCharactersCount }
 
         components?.path = pathComponents.joined(separator: "/")
         components?.queryItems = queryComponents
