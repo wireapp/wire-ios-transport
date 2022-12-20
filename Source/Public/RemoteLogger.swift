@@ -66,7 +66,7 @@ public class RemoteMonitoring: NSObject  {
     }
 
     @objc func log(response: HTTPURLResponse) {
-        let info = ResponseLog(response)
+        guard let info = ResponseLog(response) else { return }
 
         do {
             let data = try JSONEncoder().encode(info)

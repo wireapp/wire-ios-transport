@@ -19,22 +19,26 @@
 import Foundation
 
 struct RequestLog: Codable {
-    var method: String?
-    var endpoint: String?
+    var method: String
+    var endpoint: String
     var headers: [String: String]
 
-    init(_ request: NSURLRequest) {
-        self.endpoint = request.url?.endpointRemoteLogDescription
+    init?(_ request: NSURLRequest) {
+        guard let method = request.httpMethod, let url = request.url else { return nil }
+        self.endpoint = url.endpointRemoteLogDescription
 
-        var filteredHeaders = request.allHTTPHeaderFields?.filter { Self.authorizedHeaderFields.contains($0.key) } ?? [:]
+        var filteredHeaders = request.allHTTPHeaderFields?.filter {
+            Self.authorizedHeaderFields.contains($0.key.lowercased())
+        } ?? [:]
 
-        let notLoggedValues = ["Sec-WebSocket-key", "Authorization", "sec-websocket-accept", "Set-cookie"]
+        let notLoggedValues = ["Sec-WebSocket-key", "Authorization", "sec-websocket-accept", "Set-cookie"].map { $0.lowercased() }
 
-        for value in notLoggedValues where filteredHeaders[value] != nil {
-            filteredHeaders[value] = "*******"
+        for header in filteredHeaders where notLoggedValues.contains(header.key.lowercased()) {
+            filteredHeaders[header.key] = "*******"
         }
+
         self.headers = filteredHeaders
-        self.method = request.httpMethod
+        self.method = method
     }
 
     static let authorizedHeaderFields = [
@@ -64,7 +68,7 @@ struct RequestLog: Codable {
         "X-cache",
         "Sec-WebSocket-key",
         "sec-websocket-accept"
-    ]
+    ].map { $0.lowercased() }
 
 
 
@@ -77,10 +81,14 @@ extension URL {
 
         var components = URLComponents(string: self.absoluteString)
         let path = components?.path ?? ""
-        let pathComponents = path.components(separatedBy: "/").map { $0.truncated(visibleCharactersCount }
+        let pathComponents = path.components(separatedBy: "/").map { $0.truncated(visibleCharactersCount) }
 
-        let queryItems = components?.queryItems ?? []
-        let queryComponents = queryItems.map { $0.redactedAndTruncated(visibleCharactersCount }
+        var queryComponents = components?.queryItems ?? []
+        queryComponents.enumerated().forEach { item in
+            var redactedItem = item.element
+            redactedItem.value = redactedItem.value?.redactedAndTruncated(visibleCharactersCount)
+            queryComponents[item.offset] = redactedItem
+        }
 
         components?.path = pathComponents.joined(separator: "/")
         components?.queryItems = queryComponents
@@ -114,12 +122,9 @@ extension String {
         return truncated(maxVisibleCharacters)
     }
 
-    func truncated(_ maxVisibleCharacters: Int) -> String {
-        var fillCount = max(self.count - maxVisibleCharacters, 0)
-        if fillCount > maxVisibleCharacters {
-            fillCount = maxVisibleCharacters
-        }
-        let newString = String(self.prefix(maxVisibleCharacters))
-        return newString + "*".times(fillCount)
+    func truncated(_ maxCharacters: Int) -> String {
+        let result = String(prefix(maxCharacters))
+        let fillCount =  count - result.count
+        return result + "*".repeat(fillCount)
     }
 }
