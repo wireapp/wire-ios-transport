@@ -169,21 +169,14 @@ static NSInteger const DefaultMaximumRequests = 6;
     NSOperationQueue *queue = [NSOperationQueue zm_serialQueueWithName:[ZMTransportSession identifierWithPrefix:@"ZMTransportSession" userIdentifier:userIdentifier]];
     ZMSDispatchGroup *group = [ZMSDispatchGroup groupWithLabel:[ZMTransportSession identifierWithPrefix:@"ZMTransportSession init" userIdentifier:userIdentifier]];
 
-    NSDictionary* proxyDictionary = nil;
-    if (environment.proxy != nil) {
-        proxyDictionary = [environment.proxy socks5SettingsWithProxyUsername:proxyUsername proxyPassword:proxyPassword];
-    }
-    
+    NSDictionary* proxyDictionary = [environment.proxy socks5SettingsWithProxyUsername:proxyUsername proxyPassword:proxyPassword];
+
+
+    // foregroundSession
     NSString *foregroundIdentifier = [ZMTransportSession identifierWithPrefix:ZMURLSessionForegroundIdentifier userIdentifier:userIdentifier];
 
-    NSURLSessionConfiguration *foregroundConfiguration;
-    if (environment.proxy != nil) {
-        foregroundConfiguration = [[self class] foregroundSessionConfiguration];
-        foregroundConfiguration.connectionProxyDictionary = [proxyDictionary asDictionary];
-    }
-    else {
-        foregroundConfiguration = [[self class] foregroundSessionConfiguration];
-    }
+    NSURLSessionConfiguration *foregroundConfiguration = [[self class] foregroundSessionConfiguration];
+    foregroundConfiguration.connectionProxyDictionary = proxyDictionary;
 
     ZMURLSession *foregroundSession = [[ZMURLSession alloc] initWithConfiguration:foregroundConfiguration
                                                                     trustProvider:environment
@@ -191,24 +184,16 @@ static NSInteger const DefaultMaximumRequests = 6;
                                                                     delegateQueue:queue
                                                                        identifier:foregroundIdentifier
                                                                         userAgent:userAgent];
-    
+
+    // backgroundSession
     NSString *backgroundIdentifier = [ZMTransportSession identifierWithPrefix:ZMURLSessionBackgroundIdentifier
                                                                userIdentifier:userIdentifier];
-    NSURLSessionConfiguration *backgroundSessionConfiguration = [[self class]
+
+    NSURLSessionConfiguration *backgroundConfiguration = [[self class]
                                                                  backgroundSessionConfigurationWithSharedContainerIdentifier:applicationGroupIdentifier
                                                                  userIdentifier:userIdentifier];
+    backgroundConfiguration.connectionProxyDictionary = proxyDictionary;
 
-    NSURLSessionConfiguration *backgroundConfiguration;
-    if (environment.proxy != nil) {
-        backgroundConfiguration = backgroundSessionConfiguration;
-
-        backgroundConfiguration.connectionProxyDictionary = proxyDictionary;
-    }
-    else {
-        backgroundConfiguration = [[self class]
-                                   backgroundSessionConfigurationWithSharedContainerIdentifier:applicationGroupIdentifier
-                                   userIdentifier:userIdentifier];
-    }
 
     ZMURLSession *backgroundSession = [[ZMURLSession alloc] initWithConfiguration:backgroundConfiguration
                                                                     trustProvider:environment

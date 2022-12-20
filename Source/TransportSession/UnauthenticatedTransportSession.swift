@@ -154,7 +154,6 @@ final public class UnauthenticatedTransportSession: NSObject, UnauthenticatedTra
     private func enqueueRequest(_ request: ZMTransportRequest) {
         guard readyForRequests else {
             zmLog.info("Dropping request \(request) as networkTransportSession not ready")
-            // TODO: queue ZMTransportRequests until ready
             return
         }
         guard let urlRequest = URL(string: request.path, relativeTo: baseURL).flatMap(NSMutableURLRequest.init) else { preconditionFailure() }

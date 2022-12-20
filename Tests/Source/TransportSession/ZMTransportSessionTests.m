@@ -246,9 +246,6 @@ static FakePushChannel *currentFakePushChannel;
                              proxyUsername:(NSString * _Nullable)proxyUsername
                              proxyPassword:(NSString * _Nullable)proxyPassword queue:(NSOperationQueue * _Nonnull)queue {
     self = [self initWithScheduler:scheduler userAgentString:userAgentString environment:environment queue:queue];
-    if (self) {
-        // do more here if needed
-    }
     return self;
 }
 

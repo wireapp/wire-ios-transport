@@ -21,7 +21,7 @@ import WireTesting
 
 class ProxyCredentialsTests: ZMTBaseTest {
 
-    func test_persist_storesInformationToTheKeychain() throws {
+    func test_persist_storesInformationToTheKeychainDoesNotThrow() throws {
         // GIVEN
         let password = "12345"
         let username = "testUsername"
@@ -31,7 +31,7 @@ class ProxyCredentialsTests: ZMTBaseTest {
         let sut = ProxyCredentials(username: username, password: password, proxy: proxy)
 
         // THEN
-        try sut?.persist()
+        XCTAssertNoThrow(try sut?.persist())
     }
 
     func test_retrieveFrom_returnsCredentialsIfStoredOneExists() throws {
@@ -67,7 +67,7 @@ final class MockProxy: NSObject, ProxySettingsProvider {
         self.needsAuthentication = needsAuthentication
     }
 
-    func socks5Settings(proxyUsername: String?, proxyPassword: String?) -> NSDictionary {
-        return NSDictionary()
+    func socks5Settings(proxyUsername: String?, proxyPassword: String?) -> [AnyHashable : Any]? {
+        return nil
     }
 }

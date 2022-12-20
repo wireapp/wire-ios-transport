@@ -83,7 +83,7 @@ final class UnauthenticatedTransportSessionTests: ZMTBaseTest {
 
     override func setUp() {
         super.setUp()
-        setupSut(ready: true)
+        setupSut(readyForRequests: true)
     }
 
 
@@ -93,7 +93,7 @@ final class UnauthenticatedTransportSessionTests: ZMTBaseTest {
         super.tearDown()
     }
 
-    private func setupSut(ready: Bool) {
+    private func setupSut(readyForRequests: Bool) {
         sessionMock = MockURLSession()
         let endpoints = BackendEndpoints(backendURL: url,
                                          backendWSURL: url,
@@ -116,7 +116,7 @@ final class UnauthenticatedTransportSessionTests: ZMTBaseTest {
                                               urlSession: sessionMock,
                                               reachability: MockReachability(),
                                               applicationVersion: "1.0",
-                                              ready: ready)
+                                              readyForRequests: readyForRequests)
     }
 
 
@@ -269,7 +269,7 @@ final class UnauthenticatedTransportSessionTests: ZMTBaseTest {
 
     func testEnqueueRequestWhenNotReady_DoesNothing() {
         // GIVEN
-        setupSut(ready: false)
+        setupSut(readyForRequests: false)
 
         let task = MockTask()
         sessionMock.nextMockTask = task
@@ -284,7 +284,7 @@ final class UnauthenticatedTransportSessionTests: ZMTBaseTest {
 
     func testEnqueueOneTimeWhenNotReady_DoesNothing() {
         // GIVEN
-        setupSut(ready: false)
+        setupSut(readyForRequests: false)
 
         let task = MockTask()
         sessionMock.nextMockTask = task
