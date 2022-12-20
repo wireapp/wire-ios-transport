@@ -31,9 +31,7 @@ struct RequestLog: Codable {
             Self.authorizedHeaderFields.contains($0.key.lowercased())
         } ?? [:]
 
-        let notLoggedValues = ["Sec-WebSocket-key", "Authorization", "sec-websocket-accept", "Set-cookie"].map { $0.lowercased() }
-
-        for header in filteredHeaders where notLoggedValues.contains(header.key.lowercased()) {
+        for header in filteredHeaders where Self.notLoggedValues.contains(header.key.lowercased()) {
             filteredHeaders[header.key] = "*******"
         }
 
@@ -41,7 +39,14 @@ struct RequestLog: Codable {
         self.method = method
     }
 
-    static let authorizedHeaderFields = [
+    static let notLoggedValues = Set([
+        "Sec-WebSocket-key",
+        "Authorization",
+        "sec-websocket-accept",
+        "Set-cookie"
+    ].map { $0.lowercased() })
+
+    static let authorizedHeaderFields = Set([
         "Accept",
         "Accept-Charset",
         "Authorization",
@@ -69,10 +74,7 @@ struct RequestLog: Codable {
         "Sec-WebSocket-key",
         "sec-websocket-accept"
     ].map { $0.lowercased() }
-
-
-
-
+    )
 }
 
 extension URL {
