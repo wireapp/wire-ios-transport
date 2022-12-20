@@ -86,7 +86,9 @@ extension URL {
         var queryComponents = components?.queryItems ?? []
         queryComponents.enumerated().forEach { item in
             var redactedItem = item.element
-            redactedItem.value = redactedItem.value?.redactedAndTruncated(visibleCharactersCount)
+            // truncates to 8 digits max for ids
+            let value = redactedItem.value?.redactedAndTruncated(maxVisibleCharacters: visibleCharactersCount, length: 8) ?? ""
+            redactedItem.value = value
             queryComponents[item.offset] = redactedItem
         }
 
@@ -115,16 +117,17 @@ extension String {
         return newString
     }
 
-    func redactedAndTruncated(_ maxVisibleCharacters: Int) -> String {
+    func redactedAndTruncated(maxVisibleCharacters: Int, length: Int) -> String {
         if self.count <= maxVisibleCharacters {
-            return "*".times(self.count)
+            return redacted
         }
-        return truncated(maxVisibleCharacters)
+        let newString = truncated(maxVisibleCharacters)
+        return String(newString.prefix(length))
     }
 
     func truncated(_ maxCharacters: Int) -> String {
         let result = String(prefix(maxCharacters))
         let fillCount =  count - result.count
-        return result + "*".repeat(fillCount)
+        return result + "*".times(fillCount)
     }
 }

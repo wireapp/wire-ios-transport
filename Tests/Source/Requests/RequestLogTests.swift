@@ -39,7 +39,7 @@ class RequestLogTests: XCTestCase {
             return
         }
 
-        XCTAssertEqual(sut.endpoint, "prod-nginz-https.wire.com/v2/not***?size=***&since=05b***&client=e00***")
+        XCTAssertEqual(sut.endpoint, "prod-nginz-https.wire.com/v2/not**********?size=***&since=05b*****&client=e00*****")
     }
 
     func testAuthorizationHeaderValueIsRedacted() throws {
