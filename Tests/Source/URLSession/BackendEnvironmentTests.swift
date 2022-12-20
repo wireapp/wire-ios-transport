@@ -108,11 +108,10 @@ class BackendEnvironmentTests: XCTestCase {
             return
         }
 
-        guard
-            let environment = BackendEnvironment(
-                environmentType: EnvironmentType(userDefaults: defaultsCustom),
-                data: data)
-        else {
+        guard let environment = BackendEnvironment(
+            environmentType: EnvironmentType(userDefaults: defaultsCustom),
+            data: data
+        ) else {
             XCTFail("Could not read environment data from Backend.bundle")
             return
 
