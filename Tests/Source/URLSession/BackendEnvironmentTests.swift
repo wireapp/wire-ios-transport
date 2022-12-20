@@ -104,8 +104,8 @@ class BackendEnvironmentTests: XCTestCase {
         guard
             let data = try? Data(contentsOf: URL(fileURLWithPath: path))
         else {
-                XCTFail("Could not read \(path)")
-                return
+            XCTFail("Could not read \(path)")
+            return
         }
 
         guard
