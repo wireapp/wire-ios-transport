@@ -74,8 +74,7 @@ class BackendEnvironmentTests: XCTestCase {
 
     func testThatWeCanLoadBackendEndpoints() {
 
-        guard
-            let environment = BackendEnvironment(
+        guard let environment = BackendEnvironment(
             userDefaults: defaultsProd,
             configurationBundle: backendBundle
         ) else {
