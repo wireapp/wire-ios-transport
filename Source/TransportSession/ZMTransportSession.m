@@ -312,21 +312,6 @@ static NSInteger const DefaultMaximumRequests = 6;
             self.baseURL, self.websocketURL];
 }
 
-- (void)setAccessTokenRenewalFailureHandler:(ZMCompletionHandlerBlock)handler;
-{
-    [self.accessTokenHandler setAccessTokenRenewalFailureHandler:handler];
-
-}
-
-- (void)setAccessTokenRenewalSuccessHandler:(ZMAccessTokenHandlerBlock)handler
-{
-    [self.accessTokenHandler setAccessTokenRenewalSuccessHandler:handler];
-}
-
-- (ZMAccessToken *)accessToken {
-    return self.accessTokenHandler.accessToken;
-}
-
 - (NSString *)tasksDescription;
 {
     return self.sessionsDirectory.description;
@@ -809,6 +794,29 @@ static NSInteger const DefaultMaximumRequests = 6;
 - (id<ZMPushChannel>)pushChannel
 {
     return self.transportPushChannel;
+}
+
+@end
+
+@implementation ZMTransportSession (AccessToken)
+
+- (void)setAccessTokenRenewalFailureHandler:(ZMCompletionHandlerBlock)handler;
+{
+    [self.accessTokenHandler setAccessTokenRenewalFailureHandler:handler];
+}
+
+- (void)setAccessTokenRenewalSuccessHandler:(ZMAccessTokenHandlerBlock)handler;
+{
+    [self.accessTokenHandler setAccessTokenRenewalSuccessHandler:handler];
+}
+
+- (void)renewAccessTokenWithClientID:(NSString *)clientID
+{
+    [self.accessTokenHandler sendAccessTokenRequestWithURLSession:self.sessionsDirectory.foregroundSession clientID:clientID];
+}
+
+- (ZMAccessToken *)accessToken {
+    return self.accessTokenHandler.accessToken;
 }
 
 @end

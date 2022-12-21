@@ -37,6 +37,9 @@ public protocol TransportSessionType: ZMBackgroundable, ZMRequestCancellation, T
     
     @objc(setAccessTokenRenewalFailureHandler:)
     func setAccessTokenRenewalFailureHandler(handler: @escaping ZMCompletionHandlerBlock)
+
+    @objc(setAccessTokenRenewalSuccessHandler:)
+    func setAccessTokenRenewalSuccessHandler(handler: @escaping ZMAccessTokenHandlerBlock)
     
     func setNetworkStateDelegate(_ delegate: ZMNetworkStateDelegate?)
     
@@ -45,6 +48,9 @@ public protocol TransportSessionType: ZMBackgroundable, ZMRequestCancellation, T
     
     @objc(configurePushChannelWithConsumer:groupQueue:)
     func configurePushChannel(consumer: ZMPushChannelConsumer, groupQueue: ZMSGroupQueue)
+
+    @objc(renewAccessTokenWithClientID:)
+    func renewAccessToken(with clientID: String)
     
 }
 
