@@ -17,7 +17,7 @@
 //
 
 
-import WireTesting
+import  WireTesting
 @testable import WireTransport
 
 
@@ -92,7 +92,13 @@ final class UnauthenticatedTransportSessionTests: ZMTBaseTest {
                                          websiteURL: url,
                                          countlyURL: url)
         let trust = MockCertificateTrust()
-        let environment = BackendEnvironment(title: name, environmentType: .production, endpoints: endpoints, certificateTrust: trust)
+        let environment = BackendEnvironment(
+            title: name,
+            environmentType: .production,
+            endpoints: endpoints,
+            proxySettings: nil,
+            certificateTrust: trust
+        )
         sut = UnauthenticatedTransportSession(environment: environment,
                                               urlSession: sessionMock,
                                               reachability: MockReachability(),

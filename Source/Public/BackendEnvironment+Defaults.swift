@@ -17,6 +17,7 @@
 //
 
 import Foundation
+import WireUtilities
 
 extension BackendEnvironment {
 
@@ -52,17 +53,31 @@ extension BackendEnvironment {
             struct SerializedData: Encodable {
                 let title: String
                 let endpoints: BackendEndpoints
+                let proxy: ProxySettings?
             }
             
-            let backendEndpoints = BackendEndpoints(backendURL: endpoints.backendURL,
-                                                    backendWSURL: endpoints.backendWSURL,
-                                                    blackListURL: endpoints.blackListURL,
-                                                    teamsURL: endpoints.teamsURL,
-                                                    accountsURL: endpoints.accountsURL,
-                                                    websiteURL: endpoints.websiteURL,
-                                                    countlyURL: endpoints.countlyURL)
-            
-            let data = SerializedData(title: title, endpoints: backendEndpoints)
+            let backendEndpoints = BackendEndpoints(
+                backendURL: endpoints.backendURL,
+                backendWSURL: endpoints.backendWSURL,
+                blackListURL: endpoints.blackListURL,
+                teamsURL: endpoints.teamsURL,
+                accountsURL: endpoints.accountsURL,
+                websiteURL: endpoints.websiteURL,
+                countlyURL: endpoints.countlyURL
+            )
+
+            let proxy: ProxySettings?
+            if let proxySettingsFromProvier = proxySettings {
+                proxy = ProxySettings(
+                    apiProxy: proxySettingsFromProvier.apiProxy,
+                    port: proxySettingsFromProvier.port,
+                    needsAuthentication: proxySettingsFromProvier.needsAuthentication
+                )
+            } else {
+                proxy = nil
+            }
+
+            let data = SerializedData(title: title, endpoints: backendEndpoints, proxy: proxy)
             let encoded = try? JSONEncoder().encode(data)
             userDefaults.set(encoded, forKey: BackendEnvironment.defaultsKey)
         default:
@@ -75,6 +90,7 @@ extension BackendEnvironment {
             UserDefaults.moveValue(forKey: key, from: from, to: to)
         }
     }
+    
 }
 
 fileprivate extension UserDefaults {

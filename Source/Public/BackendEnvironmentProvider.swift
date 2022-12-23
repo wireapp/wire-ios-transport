@@ -1,6 +1,6 @@
 //
 // Wire
-// Copyright (C) 2018 Wire Swiss GmbH
+// Copyright (C) 2022 Wire Swiss GmbH
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -51,4 +51,13 @@ import Foundation
     var title: String { get }
     
     var environmentType: EnvironmentTypeProvider { get }
+    var proxy: ProxySettingsProvider? { get }
+}
+
+@objc public protocol ProxySettingsProvider: NSObjectProtocol {
+
+    /// Host is expressed as domain name or an IP address **without** scheme
+    var apiProxy: URL { get }
+    var port: Int { get }
+    var needsAuthentication: Bool { get }
 }

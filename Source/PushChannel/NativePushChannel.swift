@@ -62,11 +62,14 @@ class NativePushChannel: NSObject, PushChannelType {
     required init(scheduler: ZMTransportRequestScheduler,
                   userAgentString: String,
                   environment: BackendEnvironmentProvider,
+                  proxyUsername: String?,
+                  proxyPassword: String?,
                   queue: OperationQueue) {
         self.environment = environment
         self.scheduler = scheduler
         self.workQueue = queue
-
+        self.proxyUsername = proxyUsername
+        self.proxyPassword = proxyPassword
         super.init()
         self.session = URLSession(configuration: .ephemeral, delegate: self, delegateQueue: queue)
     }
@@ -159,6 +162,11 @@ class NativePushChannel: NSObject, PushChannelType {
             self?.listen()
         })
     }
+
+    // MARK: - Private
+
+    private let proxyUsername: String?
+    private let proxyPassword: String?
 
     private func onClose() {
         websocketTask = nil

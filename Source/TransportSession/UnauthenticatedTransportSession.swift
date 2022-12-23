@@ -16,6 +16,9 @@
 // along with this program. If not, see http://www.gnu.org/licenses/.
 //
 
+import CoreFoundation
+import Security
+
 
 public enum EnqueueResult {
     case success, nilRequest, maximumNumberOfRequests
@@ -81,9 +84,12 @@ final public class UnauthenticatedTransportSession: NSObject, UnauthenticatedTra
     private let remoteMonitoring: RemoteMonitoring
     
     public init(environment: BackendEnvironmentProvider,
+                proxyUsername: String?,
+                proxyPassword: String?,
                 urlSession: SessionProtocol? = nil,
                 reachability: ReachabilityProvider,
-                applicationVersion: String) {
+                applicationVersion: String
+    ) {
         self.baseURL = environment.backendURL
         self.environment = environment
         self.reachability = reachability
@@ -93,7 +99,27 @@ final public class UnauthenticatedTransportSession: NSObject, UnauthenticatedTra
 
         let configuration = URLSessionConfiguration.ephemeral
         configuration.httpAdditionalHeaders = ["User-Agent": ZMUserAgent.userAgent(withAppVersion: applicationVersion)]
-        
+
+        if let proxSettings = environment.proxy {
+
+            var proxyDictionary: [AnyHashable : Any] = [
+                "SOCKSEnable" : 1,
+                "SOCKSProxy": proxSettings.apiProxy,
+                "SOCKSPort": proxSettings.port,
+                kCFProxyTypeKey: kCFProxyTypeSOCKS,
+                kCFStreamPropertySOCKSVersion: kCFStreamSocketSOCKSVersion5,
+            ]
+
+            if proxSettings.needsAuthentication {
+                proxyDictionary[kCFStreamPropertySOCKSUser] = proxyUsername
+                proxyDictionary[kCFStreamPropertySOCKSPassword] = proxyPassword
+            }
+
+            configuration.connectionProxyDictionary = proxyDictionary
+            configuration.httpShouldUsePipelining = true
+            (urlSession as? URLSession)?.configuration.connectionProxyDictionary = proxyDictionary
+        }
+
         self.session = urlSession ?? URLSession(configuration: configuration, delegate: self, delegateQueue: nil)
     }
     
@@ -137,10 +163,12 @@ final public class UnauthenticatedTransportSession: NSObject, UnauthenticatedTra
         urlRequest.configure(with: request)
         remoteMonitoring.log(request: urlRequest)
         
+        request.log()
+
         let task = session.task(with: urlRequest as URLRequest) { [weak self] data, response, error in
             
             var transportResponse: ZMTransportResponse!
-            
+
             if let response = response as? HTTPURLResponse {
                 self?.remoteMonitoring.log(response: response)
                 transportResponse = ZMTransportResponse(httpurlResponse: response, data: data, error: error, apiVersion: request.apiVersion)

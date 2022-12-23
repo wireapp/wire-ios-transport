@@ -68,9 +68,14 @@ class StarscreamPushChannel: NSObject, PushChannelType {
 
     required init(scheduler: ZMTransportRequestScheduler,
                   userAgentString: String,
-                  environment: BackendEnvironmentProvider, queue: OperationQueue) {
+                  environment: BackendEnvironmentProvider,
+                  proxyUsername: String?,
+                  proxyPassword: String?,
+                  queue: OperationQueue) {
         self.environment = environment
         self.scheduler = scheduler
+        self.proxyUsername = proxyUsername
+        self.proxyPassword = proxyPassword
         self.workQueue = queue
     }
 
@@ -114,8 +119,33 @@ class StarscreamPushChannel: NSObject, PushChannelType {
         connectionRequest.setValue("\(accessToken.type) \(accessToken.token)", forHTTPHeaderField: "Authorization")
 
         let certificatePinning = StarscreamCertificatePinning(environment: environment)
-        webSocket = WebSocket(request: connectionRequest, certPinner: certificatePinning, useCustomEngine: true)
+        webSocket = WebSocket(request: connectionRequest, certPinner: certificatePinning, useCustomEngine: false)
         webSocket?.delegate = self
+
+        if let proxSettings = environment.proxy,
+           let proxyHost = proxSettings.apiProxy.host,
+           let proxyPort = proxSettings.apiProxy.port {
+
+            var configuration = URLSessionConfiguration.default
+            
+            var proxyDictionary: [AnyHashable : Any] = [
+                "SOCKSEnable" : 1,
+                "SOCKSProxy": proxyHost,
+                "SOCKSPort": proxyPort,
+                kCFProxyTypeKey: kCFProxyTypeSOCKS,
+                kCFStreamPropertySOCKSVersion: kCFStreamSocketSOCKSVersion5,
+            ]
+
+            if proxSettings.needsAuthentication {
+                proxyDictionary[kCFStreamPropertySOCKSUser] = self.proxyUsername
+                proxyDictionary[kCFStreamPropertySOCKSPassword] = self.proxyPassword
+            }
+
+            configuration.connectionProxyDictionary = proxyDictionary
+            configuration.httpShouldUsePipelining = true
+            webSocket?.configuration = configuration
+        }
+
         if let queue = workQueue.underlyingQueue {
             webSocket?.callbackQueue = queue
         }
@@ -129,6 +159,11 @@ class StarscreamPushChannel: NSObject, PushChannelType {
             self?.scheduleOpenInternal()
         }
     }
+
+    // MARK: - Private
+
+    private let proxyUsername: String?
+    private let proxyPassword: String?
 
     private func scheduleOpenInternal() {
         guard canOpenConnection else {
@@ -191,7 +226,7 @@ extension StarscreamPushChannel: ZMTimerClient {
 @available(iOSApplicationExtension 13.0, iOS 13.0, *)
 extension StarscreamPushChannel: WebSocketDelegate {
 
-    func didReceive(event: WebSocketEvent, client: WebSocket) {
+    func didReceive(event: Starscream.WebSocketEvent, client: Starscream.WebSocketClient) {
         switch event {
 
         case .connected(_):
