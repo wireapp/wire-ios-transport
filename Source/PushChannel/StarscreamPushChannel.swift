@@ -122,28 +122,14 @@ class StarscreamPushChannel: NSObject, PushChannelType {
         webSocket = WebSocket(request: connectionRequest, certPinner: certificatePinning, useCustomEngine: false)
         webSocket?.delegate = self
 
-        if let proxSettings = environment.proxy,
-           let proxyHost = proxSettings.apiProxy.host,
-           let proxyPort = proxSettings.apiProxy.port {
+        if let proxySettings = environment.proxy {
+            let proxyDictionary = proxySettings.socks5Settings(proxyUsername: proxyUsername, proxyPassword: proxyPassword).asDictionary()
 
             var configuration = URLSessionConfiguration.default
-            
-            var proxyDictionary: [AnyHashable : Any] = [
-                "SOCKSEnable" : 1,
-                "SOCKSProxy": proxyHost,
-                "SOCKSPort": proxyPort,
-                kCFProxyTypeKey: kCFProxyTypeSOCKS,
-                kCFStreamPropertySOCKSVersion: kCFStreamSocketSOCKSVersion5,
-            ]
-
-            if proxSettings.needsAuthentication {
-                proxyDictionary[kCFStreamPropertySOCKSUser] = self.proxyUsername
-                proxyDictionary[kCFStreamPropertySOCKSPassword] = self.proxyPassword
-            }
-
             configuration.connectionProxyDictionary = proxyDictionary
             configuration.httpShouldUsePipelining = true
-            webSocket?.configuration = configuration
+
+//            webSocket?.configuration = configuration
         }
 
         if let queue = workQueue.underlyingQueue {

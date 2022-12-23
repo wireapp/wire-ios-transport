@@ -9,8 +9,8 @@
         "countlyURL" : "https://countly.custom.backend.com"
     },
     "title" : "Custom Backend",
-    "proxy" : {
-        "apiProxy" : "192.168.0.152",
+    "apiProxy" : {
+        "host" : "192.168.0.152",
         "port": 1080,
         "needsAuthentication" : false
     }

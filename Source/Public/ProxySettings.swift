@@ -18,18 +18,154 @@
 
 import Foundation
 
+
 final class ProxySettings: NSObject, ProxySettingsProvider, Codable {
-    let apiProxy: URL
+
+    let host: String
     let port: Int
     let needsAuthentication: Bool
 
-    init(apiProxy: URL,
+    init(host: String,
          port: Int,
          needsAuthentication: Bool = false) {
-        self.apiProxy = apiProxy
+        self.host = host
         self.port = port
         self.needsAuthentication = needsAuthentication
         
         super.init()
+    }
+
+    func socks5Settings(proxyUsername: String?, proxyPassword: String?) -> NSDictionary {
+        var proxyDictionary: [AnyHashable : Any] = [
+            "SOCKSEnable" : 1,
+            "SOCKSProxy": host,
+            "SOCKSPort": port,
+            kCFProxyTypeKey: kCFProxyTypeSOCKS,
+            kCFStreamPropertySOCKSVersion: kCFStreamSocketSOCKSVersion5,
+        ]
+
+        if let username = proxyUsername, let password = proxyPassword, needsAuthentication {
+            proxyDictionary[kCFStreamPropertySOCKSUser] = username
+            proxyDictionary[kCFStreamPropertySOCKSPassword] = password
+        }
+        return NSDictionary(dictionary: proxyDictionary)
+    }
+}
+
+public class ProxyCredentials: NSObject {
+    public var username: String
+    public var password: String
+    public var proxy: ProxySettingsProvider
+
+
+    init(proxy: ProxySettingsProvider, username: String, password: String) {
+        self.username = username
+        self.password = password
+        self.proxy = proxy
+    }
+
+    @objc(initWithUsername:password:forProxy:)
+    public convenience init?(username: String?, password: String?, proxy: ProxySettingsProvider) {
+        guard let username = username, let password = password else {
+            return nil
+        }
+        self.init(proxy: proxy, username: username, password: password)
+    }
+
+    public func persist() {
+        guard let usernameData = username.data(using: .utf8),
+              let passwordData = password.data(using: .utf8) else { return }
+        do {
+            try Keychain.storeItem(UsernameKeychainItem(proxyHost: proxy.host), value: usernameData)
+            try Keychain.storeItem(PasswordKeychainItem(proxyHost: proxy.host), value: passwordData)
+        } catch {
+            Logging.backendEnvironment.error("could not save proxy credentials, \(error.localizedDescription)")
+        }
+    }
+
+    public static func retrieve(for proxy: ProxySettingsProvider) -> ProxyCredentials? {
+        guard let usernameData = try? Keychain.fetchItem(UsernameKeychainItem(proxyHost: proxy.host)),
+              let passwordData = try? Keychain.fetchItem(PasswordKeychainItem(proxyHost: proxy.host)),
+              let username = String(data: usernameData, encoding: .utf8),
+              let password = String(data: passwordData, encoding: .utf8) else {
+            return nil
+        }
+
+        return ProxyCredentials(username: username,
+                                password: password,
+                                proxy: proxy)
+    }
+
+
+    struct UsernameKeychainItem: KeychainItem {
+
+        // MARK: - Properties
+
+        private let itemIdentifier: String
+
+        // MARK: - Life cycle
+
+        init(proxyHost: String) {
+            self.init(itemIdentifier: "\(proxyHost)-proxy-username")
+        }
+
+        private init(itemIdentifier: String) {
+            self.itemIdentifier = itemIdentifier
+        }
+
+        // MARK: - Methods
+
+        var queryForGettingValue: [CFString: Any] {
+            [
+                kSecClass: kSecClassIdentity,
+                kSecAttrAccount: itemIdentifier,
+                kSecReturnData: true
+            ]
+        }
+
+        func queryForSetting(value: Data) -> [CFString: Any] {
+            [
+                kSecClass: kSecClassIdentity,
+                kSecAttrAccount: itemIdentifier,
+                kSecValueData: value
+            ]
+        }
+
+    }
+
+    struct PasswordKeychainItem: KeychainItem {
+
+        // MARK: - Properties
+
+        private let itemIdentifier: String
+
+        // MARK: - Life cycle
+
+        init(proxyHost: String) {
+            self.init(itemIdentifier: "\(proxyHost)-proxy-password")
+        }
+
+        private init(itemIdentifier: String) {
+            self.itemIdentifier = itemIdentifier
+        }
+
+        // MARK: - Methods
+
+        var queryForGettingValue: [CFString: Any] {
+            [
+                kSecClass: kSecClassGenericPassword,
+                kSecAttrAccount: itemIdentifier,
+                kSecReturnData: true
+            ]
+        }
+
+        func queryForSetting(value: Data) -> [CFString: Any] {
+            [
+                kSecClass: kSecClassGenericPassword,
+                kSecAttrAccount: itemIdentifier,
+                kSecValueData: value
+            ]
+        }
+
     }
 }

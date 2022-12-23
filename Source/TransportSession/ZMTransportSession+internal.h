@@ -32,6 +32,19 @@
 
 @interface ZMTransportSession ()
 
+- (instancetype)initWithURLSessionsDirectory:(id<URLSessionsDirectory, TearDownCapable>)directory
+                            requestScheduler:(ZMTransportRequestScheduler *)requestScheduler
+                                reachability:(id<ReachabilityProvider, TearDownCapable>)reachability
+                                       queue:(NSOperationQueue *)queue
+                                       group:(ZMSDispatchGroup *)group
+                                 environment:(id<BackendEnvironmentProvider>)environment
+                               proxyUsername:(NSString *)proxyUsername
+                               proxyPassword:(NSString *)proxyPassword
+                            pushChannelClass:(Class)pushChannelClass
+                               cookieStorage:(ZMPersistentCookieStorage *)cookieStorage
+                          initialAccessToken:(ZMAccessToken *)initialAccessToken
+                                   userAgent:(NSString *)userAgent;
+
 - (NSURLSessionTask *)suspendedTaskForRequest:(ZMTransportRequest *)request onSession:(ZMURLSession *)session;
 
 @end

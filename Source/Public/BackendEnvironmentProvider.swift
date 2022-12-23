@@ -57,7 +57,9 @@ import Foundation
 @objc public protocol ProxySettingsProvider: NSObjectProtocol {
 
     /// Host is expressed as domain name or an IP address **without** scheme
-    var apiProxy: URL { get }
+    var host: String { get }
     var port: Int { get }
     var needsAuthentication: Bool { get }
+
+    func socks5Settings(proxyUsername: String?, proxyPassword: String?) -> NSDictionary
 }

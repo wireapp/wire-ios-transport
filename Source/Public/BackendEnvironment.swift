@@ -117,7 +117,7 @@ public class BackendEnvironment: NSObject {
         struct SerializedData: Decodable {
             let title: String
             let endpoints: BackendEndpoints
-            let proxy: ProxySettings?
+            let apiProxy: ProxySettings?
             let pinnedKeys: [TrustData]?
         }
 
@@ -131,7 +131,7 @@ public class BackendEnvironment: NSObject {
                 title: backendData.title,
                 environmentType: environmentType,
                 endpoints: backendData.endpoints,
-                proxySettings: backendData.proxy,
+                proxySettings: backendData.apiProxy,
                 certificateTrust: certificateTrust
             )
         } catch {

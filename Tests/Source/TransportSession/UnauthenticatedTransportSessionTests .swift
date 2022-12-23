@@ -100,6 +100,8 @@ final class UnauthenticatedTransportSessionTests: ZMTBaseTest {
             certificateTrust: trust
         )
         sut = UnauthenticatedTransportSession(environment: environment,
+                                              proxyUsername: nil,
+                                              proxyPassword: nil,
                                               urlSession: sessionMock,
                                               reachability: MockReachability(),
                                               applicationVersion: "1.0")

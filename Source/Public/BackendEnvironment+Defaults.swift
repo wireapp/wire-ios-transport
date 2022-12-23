@@ -53,7 +53,7 @@ extension BackendEnvironment {
             struct SerializedData: Encodable {
                 let title: String
                 let endpoints: BackendEndpoints
-                let proxy: ProxySettings?
+                let apiProxy: ProxySettings?
             }
             
             let backendEndpoints = BackendEndpoints(
@@ -67,17 +67,17 @@ extension BackendEnvironment {
             )
 
             let proxy: ProxySettings?
-            if let proxySettingsFromProvier = proxySettings {
+            if let proxySettingsFromProvider = proxySettings {
                 proxy = ProxySettings(
-                    apiProxy: proxySettingsFromProvier.apiProxy,
-                    port: proxySettingsFromProvier.port,
-                    needsAuthentication: proxySettingsFromProvier.needsAuthentication
+                    host: proxySettingsFromProvider.host,
+                    port: proxySettingsFromProvider.port,
+                    needsAuthentication: proxySettingsFromProvider.needsAuthentication
                 )
             } else {
                 proxy = nil
             }
 
-            let data = SerializedData(title: title, endpoints: backendEndpoints, proxy: proxy)
+            let data = SerializedData(title: title, endpoints: backendEndpoints, apiProxy: proxy)
             let encoded = try? JSONEncoder().encode(data)
             userDefaults.set(encoded, forKey: BackendEnvironment.defaultsKey)
         default:

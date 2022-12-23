@@ -59,7 +59,7 @@ class BackendEnvironmentTests: XCTestCase {
             accountsURL: baseURL.appendingPathComponent("accounts"),
             websiteURL: baseURL,
             countlyURL: baseURL.appendingPathComponent("dummyCountlyURL"))
-        let proxySettings = ProxySettings(apiProxyURL: URL(string: "127.0.0.1")!, needsAuthentication: true)
+        let proxySettings = ProxySettings(host: "127.0.0.1", port: 1080, needsAuthentication: true)
         let trust = ServerCertificateTrust(trustData: [])
         let environmentType = EnvironmentType.custom(url: configURL)
         let backendEnvironment = BackendEnvironment(
@@ -126,7 +126,8 @@ class BackendEnvironmentTests: XCTestCase {
         XCTAssertEqual(environment.accountsURL, URL(string: "https://accounts.custom.backend.com")!)
 
         XCTAssertEqual(environment.proxySettings?.needsAuthentication, .some(false))
-        XCTAssertEqual(environment.proxySettings?.apiProxyURL.absoluteString, "socks5h://some.proxy.com:9090")
+        XCTAssertEqual(environment.proxySettings?.host, "192.168.0.152")
+        XCTAssertEqual(environment.proxySettings?.port, 1080)
     }
 
     func testThatWeCanLoadBackendTrust() {
@@ -179,7 +180,8 @@ class BackendEnvironmentTests: XCTestCase {
         XCTAssertEqual(loaded?.endpoints.accountsURL, backendEnvironment.endpoints.accountsURL)
         XCTAssertEqual(loaded?.endpoints.websiteURL, backendEnvironment.endpoints.websiteURL)
         XCTAssertEqual(loaded?.title, backendEnvironment.title)
-        XCTAssertEqual(loaded?.proxySettings?.apiProxyURL, backendEnvironment.proxySettings?.apiProxyURL)
+        XCTAssertEqual(loaded?.proxySettings?.host, backendEnvironment.proxySettings?.host)
+        XCTAssertEqual(loaded?.proxySettings?.port, backendEnvironment.proxySettings?.port)
         XCTAssertEqual(loaded?.proxySettings?.needsAuthentication, backendEnvironment.proxySettings?.needsAuthentication)
 
     }

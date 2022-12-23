@@ -79,7 +79,7 @@ extern NSString * const ZMTransportSessionNewRequestAvailableNotification;
 
 - (instancetype)initWithEnvironment:(id<BackendEnvironmentProvider>)environment
                       proxyUsername:(nullable NSString *)proxyUsername
-                      proxyPassword:(nullable NSString *)proxyPasswword
+                      proxyPassword:(nullable NSString *)proxyPassword
                       cookieStorage:(ZMPersistentCookieStorage *)cookieStorage
                        reachability:(id<ReachabilityProvider, TearDownCapable>)reachability
                  initialAccessToken:(nullable ZMAccessToken *)initialAccessToken

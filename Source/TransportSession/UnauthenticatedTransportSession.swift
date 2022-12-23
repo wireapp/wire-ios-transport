@@ -83,38 +83,32 @@ final public class UnauthenticatedTransportSession: NSObject, UnauthenticatedTra
 
     private let remoteMonitoring: RemoteMonitoring
     
+    /// Property to accept requests
+    public let ready: Bool
+
     public init(environment: BackendEnvironmentProvider,
                 proxyUsername: String?,
                 proxyPassword: String?,
                 urlSession: SessionProtocol? = nil,
                 reachability: ReachabilityProvider,
-                applicationVersion: String
+                applicationVersion: String,
+                ready: Bool = false
     ) {
         self.baseURL = environment.backendURL
         self.environment = environment
         self.reachability = reachability
         self.userAgent = ZMUserAgent()
         self.remoteMonitoring = RemoteMonitoring(level: .debug)
+        self.ready = ready
+        
         super.init()
 
         let configuration = URLSessionConfiguration.ephemeral
         configuration.httpAdditionalHeaders = ["User-Agent": ZMUserAgent.userAgent(withAppVersion: applicationVersion)]
 
-        if let proxSettings = environment.proxy {
 
-            var proxyDictionary: [AnyHashable : Any] = [
-                "SOCKSEnable" : 1,
-                "SOCKSProxy": proxSettings.apiProxy,
-                "SOCKSPort": proxSettings.port,
-                kCFProxyTypeKey: kCFProxyTypeSOCKS,
-                kCFStreamPropertySOCKSVersion: kCFStreamSocketSOCKSVersion5,
-            ]
-
-            if proxSettings.needsAuthentication {
-                proxyDictionary[kCFStreamPropertySOCKSUser] = proxyUsername
-                proxyDictionary[kCFStreamPropertySOCKSPassword] = proxyPassword
-            }
-
+        if let proxySettings = environment.proxy {
+            let proxyDictionary = proxySettings.socks5Settings(proxyUsername: proxyUsername, proxyPassword: proxyPassword).asDictionary()
             configuration.connectionProxyDictionary = proxyDictionary
             configuration.httpShouldUsePipelining = true
             (urlSession as? URLSession)?.configuration.connectionProxyDictionary = proxyDictionary
@@ -156,9 +150,13 @@ final public class UnauthenticatedTransportSession: NSObject, UnauthenticatedTra
 
         return .success
     }
-    
-    @discardableResult
-    private func enqueueRequest(_ request: ZMTransportRequest) -> DataTaskProtocol {
+
+    private func enqueueRequest(_ request: ZMTransportRequest) {
+        guard ready else {
+            zmLog.info("Dropping request \(request) as networkTransportSession not ready")
+            // TODO: queue ZMTransportRequests until ready
+            return
+        }
         guard let urlRequest = URL(string: request.path, relativeTo: baseURL).flatMap(NSMutableURLRequest.init) else { preconditionFailure() }
         urlRequest.configure(with: request)
         remoteMonitoring.log(request: urlRequest)
@@ -188,8 +186,6 @@ final public class UnauthenticatedTransportSession: NSObject, UnauthenticatedTra
         }
         
         task.resume()
-        
-        return task
     }
 
     /// Decrements the number of running requests and posts a new

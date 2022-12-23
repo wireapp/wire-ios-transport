@@ -90,7 +90,6 @@ static NSInteger const DefaultMaximumRequests = 6;
 
 
 @implementation ZMTransportSession
-
 - (instancetype)init
 {
     @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"You should not use -init" userInfo:nil];
@@ -172,27 +171,7 @@ static NSInteger const DefaultMaximumRequests = 6;
 
     NSDictionary* proxyDictionary = nil;
     if (environment.proxy != nil) {
-
-        NSString *proxyHost = environment.proxy.apiProxy.host;
-        NSNumber *proxyPort = environment.proxy.apiProxy.port;
-
-        if (proxyHost != nil && proxyPort != nil) {
-            proxyDictionary = @{
-                @"SOCKSEnable": @(1),
-                @"SOCKSProxy": proxyHost,
-                @"SOCKSPort": proxyPort,
-                (NSString *) kCFProxyTypeKey: (NSString *) kCFProxyTypeSOCKS,
-                (NSString *) kCFStreamPropertySOCKSVersion: (NSString *) kCFStreamSocketSOCKSVersion5,
-            };
-
-            if (environment.proxy.needsAuthentication &&
-                proxyUsername != nil &&
-                proxyPassword != nil) {
-
-                [proxyDictionary setValue:proxyUsername forKey:(NSString *) kCFStreamPropertySOCKSUser];
-                [proxyDictionary setValue:proxyPassword forKey:(NSString *) kCFStreamPropertySOCKSPassword];
-            }
-        }
+        proxyDictionary = [environment.proxy socks5SettingsWithProxyUsername:proxyUsername proxyPassword:proxyPassword];
     }
     
     NSString *foregroundIdentifier = [ZMTransportSession identifierWithPrefix:ZMURLSessionForegroundIdentifier userIdentifier:userIdentifier];
@@ -200,7 +179,7 @@ static NSInteger const DefaultMaximumRequests = 6;
     NSURLSessionConfiguration *foregroundConfiguration;
     if (environment.proxy != nil) {
         foregroundConfiguration = [[self class] foregroundSessionConfiguration];
-        foregroundConfiguration.connectionProxyDictionary = proxyDictionary;
+        foregroundConfiguration.connectionProxyDictionary = [proxyDictionary asDictionary];
     }
     else {
         foregroundConfiguration = [[self class] foregroundSessionConfiguration];
@@ -254,6 +233,7 @@ static NSInteger const DefaultMaximumRequests = 6;
                                   environment:environment
                                 proxyUsername:proxyUsername
                                 proxyPassword:proxyPassword
+                             pushChannelClass:nil
                                 cookieStorage:cookieStorage
                            initialAccessToken:initialAccessToken
                                     userAgent:userAgent];
@@ -267,6 +247,7 @@ static NSInteger const DefaultMaximumRequests = 6;
                                  environment:(id<BackendEnvironmentProvider>)environment
                                proxyUsername:(NSString *)proxyUsername
                                proxyPassword:(NSString *)proxyPassword
+                            pushChannelClass:(Class)pushChannelClass
                                cookieStorage:(ZMPersistentCookieStorage *)cookieStorage
                           initialAccessToken:(ZMAccessToken *)initialAccessToken
                                    userAgent:(NSString *)userAgent
@@ -296,7 +277,10 @@ static NSInteger const DefaultMaximumRequests = 6;
         
         self.maximumConcurrentRequests = DefaultMaximumRequests;
 
-        self.transportPushChannel = [[StarscreamPushChannel alloc] initWithScheduler:self.requestScheduler
+        if (pushChannelClass == nil) {
+            pushChannelClass = StarscreamPushChannel.class;
+        }
+        self.transportPushChannel = [[pushChannelClass alloc] initWithScheduler:self.requestScheduler
                                                                      userAgentString:userAgent
                                                                          environment:environment
                                                                        proxyUsername:proxyUsername
@@ -544,6 +528,7 @@ static NSInteger const DefaultMaximumRequests = 6;
     ZMTransportResponse *response = [self transportResponseFromURLResponse:httpResponse data:data error:transportError apiVersion:request.apiVersion];
     [self.remoteMonitoring logWithResponse:httpResponse];
 
+    ZMLogDebug(@"ConnectionProxyDictionary: %@,", session.configuration.connectionProxyDictionary);
     ZMLogPublic(@"Response to %@: %@", request.safeForLoggingDescription,  response.safeForLoggingDescription);
     ZMLogInfo(@"<---- Response to %@ %@ (status %u): %@", [ZMTransportRequest stringForMethod:request.method], request.path, (unsigned) httpResponse.statusCode, response);
     ZMLogInfo(@"URL Session is %@", session.description);
