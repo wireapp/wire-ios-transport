@@ -35,7 +35,7 @@ final class ProxySettings: NSObject, ProxySettingsProvider, Codable {
         super.init()
     }
 
-    func socks5Settings(proxyUsername: String?, proxyPassword: String?) -> NSDictionary {
+    func socks5Settings(proxyUsername: String?, proxyPassword: String?) -> [AnyHashable : Any]? {
         var proxyDictionary: [AnyHashable : Any] = [
             "SOCKSEnable" : 1,
             "SOCKSProxy": host,
@@ -48,6 +48,6 @@ final class ProxySettings: NSObject, ProxySettingsProvider, Codable {
             proxyDictionary[kCFStreamPropertySOCKSUser] = username
             proxyDictionary[kCFStreamPropertySOCKSPassword] = password
         }
-        return NSDictionary(dictionary: proxyDictionary)
+        return proxyDictionary
     }
 }

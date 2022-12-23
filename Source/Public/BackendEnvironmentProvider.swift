@@ -61,5 +61,5 @@ import Foundation
     var port: Int { get }
     var needsAuthentication: Bool { get }
 
-    func socks5Settings(proxyUsername: String?, proxyPassword: String?) -> NSDictionary
+    func socks5Settings(proxyUsername: String?, proxyPassword: String?) -> [AnyHashable : Any]?
 }

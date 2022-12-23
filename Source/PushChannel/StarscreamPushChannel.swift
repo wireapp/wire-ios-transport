@@ -123,7 +123,7 @@ class StarscreamPushChannel: NSObject, PushChannelType {
         webSocket?.delegate = self
 
         if let proxySettings = environment.proxy {
-            let proxyDictionary = proxySettings.socks5Settings(proxyUsername: proxyUsername, proxyPassword: proxyPassword).asDictionary()
+            let proxyDictionary = proxySettings.socks5Settings(proxyUsername: proxyUsername, proxyPassword: proxyPassword)
 
             let configuration = URLSessionConfiguration.default
             configuration.connectionProxyDictionary = proxyDictionary

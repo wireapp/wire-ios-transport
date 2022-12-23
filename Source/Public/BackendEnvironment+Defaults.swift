@@ -67,11 +67,11 @@ extension BackendEnvironment {
             )
 
             let proxy: ProxySettings?
-            if let proxySettingsFromProvider = proxySettings {
+            if let proxySettings = proxySettings {
                 proxy = ProxySettings(
-                    host: proxySettingsFromProvider.host,
-                    port: proxySettingsFromProvider.port,
-                    needsAuthentication: proxySettingsFromProvider.needsAuthentication
+                    host: proxySettings.host,
+                    port: proxySettings.port,
+                    needsAuthentication: proxySettings.needsAuthentication
                 )
             } else {
                 proxy = nil

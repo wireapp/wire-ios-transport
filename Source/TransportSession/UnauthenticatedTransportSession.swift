@@ -84,7 +84,7 @@ final public class UnauthenticatedTransportSession: NSObject, UnauthenticatedTra
     private let remoteMonitoring: RemoteMonitoring
     
     /// Property to accept requests
-    public let ready: Bool
+    public let readyForRequests: Bool
 
     public init(environment: BackendEnvironmentProvider,
                 proxyUsername: String?,
@@ -92,14 +92,14 @@ final public class UnauthenticatedTransportSession: NSObject, UnauthenticatedTra
                 urlSession: SessionProtocol? = nil,
                 reachability: ReachabilityProvider,
                 applicationVersion: String,
-                ready: Bool = false
+                readyForRequests: Bool = false
     ) {
         self.baseURL = environment.backendURL
         self.environment = environment
         self.reachability = reachability
         self.userAgent = ZMUserAgent()
         self.remoteMonitoring = RemoteMonitoring(level: .debug)
-        self.ready = ready
+        self.readyForRequests = readyForRequests
         
         super.init()
 
@@ -108,7 +108,7 @@ final public class UnauthenticatedTransportSession: NSObject, UnauthenticatedTra
 
 
         if let proxySettings = environment.proxy {
-            let proxyDictionary = proxySettings.socks5Settings(proxyUsername: proxyUsername, proxyPassword: proxyPassword).asDictionary()
+            let proxyDictionary = proxySettings.socks5Settings(proxyUsername: proxyUsername, proxyPassword: proxyPassword)
             configuration.connectionProxyDictionary = proxyDictionary
             configuration.httpShouldUsePipelining = true
             (urlSession as? URLSession)?.configuration.connectionProxyDictionary = proxyDictionary
@@ -152,7 +152,7 @@ final public class UnauthenticatedTransportSession: NSObject, UnauthenticatedTra
     }
 
     private func enqueueRequest(_ request: ZMTransportRequest) {
-        guard ready else {
+        guard readyForRequests else {
             zmLog.info("Dropping request \(request) as networkTransportSession not ready")
             // TODO: queue ZMTransportRequests until ready
             return

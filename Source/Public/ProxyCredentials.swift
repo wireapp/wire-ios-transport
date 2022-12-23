@@ -39,8 +39,10 @@ public final class ProxyCredentials: NSObject {
     }
 
     public func persist() throws {
-        guard let usernameData = username.data(using: .utf8),
-              let passwordData = password.data(using: .utf8) else { return }
+        guard
+            let usernameData = username.data(using: .utf8),
+            let passwordData = password.data(using: .utf8)
+        else { return }
 
         try? Keychain.deleteItem(.usernameItem(for: proxy))
         try? Keychain.deleteItem(.passwordItem(for: proxy))

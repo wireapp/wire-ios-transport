@@ -73,7 +73,7 @@ class NativePushChannel: NSObject, PushChannelType {
         super.init()
         self.session = URLSession(configuration: .ephemeral, delegate: self, delegateQueue: queue)
 
-        if let settings = environment.proxy?.socks5Settings(proxyUsername: proxyUsername, proxyPassword: proxyPassword).asDictionary() {
+        if let settings = environment.proxy?.socks5Settings(proxyUsername: proxyUsername, proxyPassword: proxyPassword) {
             self.session?.configuration.httpShouldUsePipelining = true
             self.session?.configuration.connectionProxyDictionary = settings
         }
