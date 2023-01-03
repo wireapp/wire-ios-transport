@@ -18,6 +18,7 @@
 import Foundation
 import WireTransport
 import WireTesting
+import XCTest
 
 class ProxyCredentialsTests: ZMTBaseTest {
 
@@ -49,6 +50,32 @@ class ProxyCredentialsTests: ZMTBaseTest {
         XCTAssertNotNil(sut)
         XCTAssertEqual(sut?.username, username)
         XCTAssertEqual(sut?.password, password)
+    }
+
+    func test_destroy_returnsTrueIfNotPresent() throws {
+        // GIVEN
+        let proxy = MockProxy(host: "testHost2", port: 20, needsAuthentication: true)
+
+        // WHEN
+        let result = ProxyCredentials.destroy(for: proxy)
+
+        // THEN
+        XCTAssertTrue(result)
+    }
+
+    func test_destroy_returnsTrueIfDeleted() throws {
+        // GIVEN
+        let password = "123456"
+        let username = "testUsername2"
+        let proxy = MockProxy(host: "testHost2", port: 20, needsAuthentication: true)
+        let storedCredentials = ProxyCredentials(username: username, password: password, proxy: proxy)
+        try storedCredentials?.persist()
+
+        // WHEN
+        let result = ProxyCredentials.destroy(for: proxy)
+
+        // THEN
+        XCTAssertTrue(result)
     }
 
 }

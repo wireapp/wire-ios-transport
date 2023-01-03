@@ -67,7 +67,16 @@ public final class ProxyCredentials: NSObject {
         }
     }
 
-
+    public static func destroy(for proxy: ProxySettingsProvider) -> Bool {
+        do {
+            try Keychain.deleteItem(.usernameItem(for: proxy))
+            try Keychain.deleteItem(.passwordItem(for: proxy))
+        } catch {
+            Logging.backendEnvironment.error(error.localizedDescription)
+            return false
+        }
+        return true
+    }
 }
 
 struct GenericPasswordKeychainItem: KeychainItem {
