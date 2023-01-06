@@ -62,7 +62,6 @@ public final class ProxyCredentials: NSObject {
                                     password: password,
                                     proxy: proxy)
         } catch {
-            Logging.backendEnvironment.error(error.localizedDescription)
             return nil
         }
     }
