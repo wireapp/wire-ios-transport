@@ -294,7 +294,7 @@ static NSInteger const DefaultMaximumRequests = 6;
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(renewReachabilityObserverToken)
                                                      name:ZMTransportSessionReachabilityIsEnabled
-                                                   object:nil];
+                                                   object:self.reachability];
     }
     return self;
 }
