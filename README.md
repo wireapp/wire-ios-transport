@@ -17,6 +17,8 @@ This framework is part of Wire iOS. Additional documentation is available in the
 
 The wire-ios-transport framework abstracts the network communication with our backend. It handles authentication of requests, network failures and retries transparently.
 
+⚠️ **This repository is now part of [wire-ios-mono](https://github.com/wireapp/wire-ios-mono)**
+
 ### How to build
 
 This framework is using Carthage to manage its dependencies. To pull the dependencies binaries, run `carthage bootstrap --platform ios --use-xcframeworks`.
